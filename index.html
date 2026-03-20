@@ -260,6 +260,13 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 }
 @media print{.board-watermark{display:none;}}
 
+
+/* ── SEASON SWITCHER ─────────────────────────────────── */
+.season-switcher{display:flex;align-items:center;gap:3px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.season-btn{background:transparent;border:none;border-radius:6px;padding:5px 16px;font-family:var(--font-display);font-size:15px;letter-spacing:0.1em;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.season-btn.active{background:var(--accent);color:#0e0e0e;box-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.season-btn:not(.active):hover{color:var(--text);}
+
 /* ── RESPONSIVE ─────────────────────────────────── */
 
 /* Tablet: 768px and below */
@@ -452,7 +459,11 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 </header>
 
 <div class="filter-bar">
-  <span class="filter-label">Filter</span>
+  <div class="season-switcher">
+    <button class="season-btn active" id="season-s1-btn">S1</button>
+    <button class="season-btn" id="season-s2-btn">S2</button>
+  </div>
+  <span class="filter-label" style="margin-left:4px;">Filter</span>
   <button class="filter-btn active" data-filter="all">All</button>
   <button class="filter-btn" data-filter="perf">Performance</button>
   <button class="filter-btn" data-filter="int">Interview</button>
@@ -581,43 +592,43 @@ var WEEKS=[
     {id:'u5',artist:'Mojofly',detail:'TK Tambayan (interview)',type:'int',day:'Mar 13',shoot:'Dec 2, 2025'},
     {id:'u6',artist:'Zelle',detail:'Sabihin',type:'perf',day:'Mar 16',shoot:'Nov 15, 2025'}
   ]},
-  {id:'w1234a',label:'Week 1',date:'Mar 23 \u2013 29',cards:[
-    {id:'w1a',artist:'Grin Department',detail:'Song 2',type:'perf',day:'Mar 23 (Mon)',shoot:'Nov 24, 2025'},
-    {id:'w1b',artist:'Grin Department',detail:'Song 3',type:'perf',day:'Mar 25 (Wed)',shoot:'Nov 24, 2025'},
-    {id:'w1c',artist:'Grin Department',detail:'TK Tambayan (interview)',type:'int',day:'Mar 27 (Fri)',shoot:'Nov 24, 2025'},
-    {id:'w1d',artist:'Zelle',detail:'Song 2',type:'perf',day:'Mar 28 (Sat)',shoot:'Nov 15, 2025'},
-    {id:'w2a',artist:'Zelle',detail:'TK Tambayan (interview)',type:'int',day:'Mar 30 (Mon)',shoot:'Nov 15, 2025'}
+  {id:'w1',label:'Week 1',date:'Mar 25 \u2013 30',cards:[
+    {id:'w1_01',artist:'Pin-up Girls',detail:'Song 1',type:'perf',day:'Tue Mar 25',shoot:'Nov 14, 2025'},
+    {id:'w1_02',artist:'Pin-up Girls',detail:'Song 2',type:'perf',day:'Tue Mar 25',shoot:'Nov 14, 2025'},
+    {id:'w1_03',artist:'Pin-up Girls',detail:'TK Tambayan (interview)',type:'int',day:'Tue Mar 25',shoot:'Nov 14, 2025'},
+    {id:'w1_04',artist:'Grin Department',detail:'Song 1',type:'perf',day:'Wed Mar 26',shoot:'Nov 24, 2025'},
+    {id:'w1_05',artist:'Grin Department',detail:'TK Tambayan (interview)',type:'int',day:'Wed Mar 26',shoot:'Nov 24, 2025'},
+    {id:'w1_06',artist:'TK Promo',detail:'Promo #1',type:'perf',day:'Wed Mar 26',shoot:'TBD'},
+    {id:'w1_07',artist:'Zelle',detail:'Song 1',type:'perf',day:'Thu Mar 27',shoot:'Nov 15, 2025'},
+    {id:'w1_08',artist:'Zelle',detail:'TK Tambayan (interview)',type:'int',day:'Thu Mar 27',shoot:'Nov 15, 2025'},
+    {id:'w1_09',artist:'TK Promo',detail:'Promo #2',type:'perf',day:'Thu Mar 27',shoot:'TBD'},
+    {id:'w1_10',artist:"Datu's Tribe",detail:'TK Tambayan (interview)',type:'int',day:'Fri Mar 28',shoot:'Nov 27, 2025'},
+    {id:'w1_11',artist:'Mojofly',detail:'Song 1',type:'perf',day:'Fri Mar 28',shoot:'Dec 2, 2025'},
+    {id:'w1_12',artist:'Mutiny',detail:'Song 1',type:'perf',day:'Sun Mar 30',shoot:'Feb 7'},
+    {id:'w1_13',artist:'Mutiny',detail:'Song 2',type:'perf',day:'Sun Mar 30',shoot:'Feb 7'},
+    {id:'w1_14',artist:'Mutiny',detail:'TK Tambayan (interview)',type:'int',day:'Sun Mar 30',shoot:'Feb 7'}
   ]},
-  {id:'w1234b',label:'Week 2',date:'Apr 1 \u2013 5',cards:[
-    {id:'w2b',artist:'Mojofly',detail:'Song 2',type:'perf',day:'Apr 1 (Wed)',shoot:'Dec 2, 2025'},
-    {id:'w2c',artist:'Side A',detail:'Song 3',type:'perf',day:'Apr 3 (Fri)',shoot:'Feb 25'},
-    {id:'w2d',artist:'Side A',detail:'Song 4',type:'perf',day:'Apr 4 (Sat)',shoot:'Feb 25'},
-    {id:'w3a',artist:'Pin-up Girls',detail:'Performance',type:'perf',day:'Apr 5 (Sun)',shoot:'Nov 14, 2025'},
-    {id:'w3b',artist:'Pin-up Girls',detail:'TK Tambayan (interview)',type:'int',day:'Apr 5 (Sun)',shoot:'Nov 14, 2025'},
-    {id:'w3c',artist:'Nextone',detail:'Performance',type:'perf',day:'Apr 5 (Sun)',shoot:'Nov 21, 2025'},
-    {id:'w3d',artist:'Nextone',detail:'TK Tambayan (interview)',type:'int',day:'Apr 5 (Sun)',shoot:'Nov 21, 2025'},
-    {id:'w4a',artist:"Datu's Tribe",detail:'Performance',type:'perf',day:'Apr 5 (Sun)',shoot:'Nov 27, 2025'},
-    {id:'w4b',artist:"Datu's Tribe",detail:'TK Tambayan (interview)',type:'int',day:'Apr 5 (Sun)',shoot:'Nov 27, 2025'},
-    {id:'w4c',artist:'Mutiny',detail:'Performance',type:'perf',day:'Apr 5 (Sun)',shoot:'Feb 7'},
-    {id:'w4d',artist:'Mutiny',detail:'TK Tambayan (interview)',type:'int',day:'Apr 5 (Sun)',shoot:'Feb 7'}
+  {id:'w2',label:'Week 2',date:'Apr 1 \u2013 6',cards:[
+    {id:'w2_01',artist:'Nextone',detail:'Song 1',type:'perf',day:'Tue Apr 1',shoot:'Nov 21, 2025'},
+    {id:'w2_02',artist:'Nextone',detail:'Song 2',type:'perf',day:'Tue Apr 1',shoot:'Nov 21, 2025'},
+    {id:'w2_03',artist:'Nextone',detail:'TK Tambayan (interview)',type:'int',day:'Tue Apr 1',shoot:'Nov 21, 2025'},
+    {id:'w2_04',artist:'Aurora',detail:'Song 1',type:'perf',day:'Wed Apr 2',shoot:'Feb 21'},
+    {id:'w2_05',artist:'Aurora',detail:'Song 2',type:'perf',day:'Wed Apr 2',shoot:'Feb 21'},
+    {id:'w2_06',artist:'Aurora',detail:'TK Tambayan (interview)',type:'int',day:'Wed Apr 2',shoot:'Feb 21'},
+    {id:'w2_07',artist:'Side A',detail:'Song 1',type:'perf',day:'Thu Apr 3',shoot:'Feb 25'},
+    {id:'w2_08',artist:'Side A',detail:'Song 2',type:'perf',day:'Thu Apr 3',shoot:'Feb 25'},
+    {id:'w2_09',artist:'TK Promo',detail:'Promo #3',type:'perf',day:'Thu Apr 3',shoot:'TBD'},
+    {id:'w2_10',artist:'Yun',detail:'Song 1',type:'perf',day:'Fri Apr 4',shoot:'Feb 28'},
+    {id:'w2_11',artist:'Yun',detail:'Song 2',type:'perf',day:'Fri Apr 4',shoot:'Feb 28'},
+    {id:'w2_12',artist:'TK Promo',detail:'Promo #4',type:'perf',day:'Fri Apr 4',shoot:'TBD'},
+    {id:'w2_13',artist:'Yun',detail:'Song 3',type:'perf',day:'Sun Apr 6',shoot:'Feb 28'},
+    {id:'w2_14',artist:'Yun',detail:'TK Tambayan (interview)',type:'int',day:'Sun Apr 6',shoot:'Feb 28'},
+    {id:'w2_15',artist:'TK Promo',detail:'Promo #5',type:'perf',day:'Sun Apr 6',shoot:'TBD'}
   ]},
-  {id:'w5',label:'Week 3',date:'Apr 6 \u2013 12',cards:[
-    {id:'w5a',artist:'Aurora',detail:'Performance',type:'perf',day:'Mon Apr 7',shoot:'Feb 21'},
-    {id:'w5b',artist:'Aurora',detail:'TK Tambayan (interview)',type:'int',day:'Wed Apr 9',shoot:'Feb 21'},
-    {id:'w5c',artist:'Yun',detail:'Performance',type:'perf',day:'Fri Apr 11',shoot:'Feb 28'},
-    {id:'w5d',artist:'Yun',detail:'TK Tambayan (interview)',type:'int',day:'Sat Apr 12',shoot:'Feb 28'}
-  ]},
-  {id:'w6',label:'Week 4',date:'Apr 13 \u2013 19',cards:[
-    {id:'w6a',artist:'Chronoscythe',detail:'Performance',type:'perf',day:'Mon Apr 14',shoot:'Mar 7'},
-    {id:'w6b',artist:'Chronoscythe',detail:'TK Tambayan (interview)',type:'int',day:'Wed Apr 16',shoot:'Mar 7'},
-    {id:'w6c',artist:'Luke Mejares',detail:'Performance',type:'perf',day:'Fri Apr 18',shoot:'Mar 14'},
-    {id:'w6d',artist:'Luke Mejares',detail:'TK Tambayan (interview)',type:'int',day:'Sat Apr 19',shoot:'Mar 14'}
-  ]},
-  {id:'w7',label:'Week 5',date:'Apr 20 \u2013 26',cards:[
-    {id:'w7a',artist:'Southborder',detail:'Performance',type:'perf',day:'Mon Apr 21',shoot:'Mar 18'},
-    {id:'w7b',artist:'Southborder',detail:'TK Tambayan (interview)',type:'int',day:'Wed Apr 23',shoot:'Mar 18'},
-    {id:'w7c',artist:'Bruno',detail:'Performance',type:'shoot',day:'Fri Apr 25',shoot:'Mar 21'},
-    {id:'w7d',artist:'Bruno',detail:'Song 2 or interview',type:'shoot',day:'Sat Apr 26',shoot:'Mar 21'}
+  {id:'w3',label:'Week 3',date:'Apr 8 \u2013 13',cards:[
+    {id:'w3_01',artist:'Chronoscythe',detail:'Song 1',type:'perf',day:'Tue Apr 8',shoot:'Mar 7'},
+    {id:'w3_02',artist:'Chronoscythe',detail:'TK Tambayan (interview)',type:'int',day:'Tue Apr 8',shoot:'Mar 7'},
+    {id:'w3_03',artist:'TK Promo',detail:'Promo #6',type:'perf',day:'Wed Apr 9',shoot:'TBD'}
   ]},
   {id:'wup',label:'Upcoming Shoots',date:'Apr 28+',cards:[
     {id:'up1',artist:'Max Ayeza / Solo Female',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Mar 28'},
@@ -634,6 +645,37 @@ var WEEKS=[
   ]}
 ];
 
+var WEEKS_S2=[
+  {id:'s2_w0',label:'Already Uploaded',date:'Before Apr 20',cards:[]},
+  {id:'s2_w1',label:'Week 1',date:'Apr 20 – 27',cards:[
+    {id:'s2_01',artist:'Luke Mejares',detail:'Song 1',type:'perf',day:'Sun Apr 20',shoot:'TBD'},
+    {id:'s2_02',artist:'Luke Mejares',detail:'Song 2',type:'perf',day:'Sun Apr 20',shoot:'TBD'},
+    {id:'s2_03',artist:'Luke Mejares',detail:'Song 3',type:'perf',day:'Tue Apr 22',shoot:'TBD'},
+    {id:'s2_04',artist:'Luke Mejares',detail:'TK Tambayan (interview)',type:'int',day:'Tue Apr 22',shoot:'TBD'},
+    {id:'s2_05',artist:'Southborder',detail:'Song 1',type:'perf',day:'Wed Apr 23',shoot:'TBD'},
+    {id:'s2_06',artist:'Southborder',detail:'Song 2',type:'perf',day:'Wed Apr 23',shoot:'TBD'},
+    {id:'s2_07',artist:'Southborder',detail:'Song 3',type:'perf',day:'Thu Apr 24',shoot:'TBD'},
+    {id:'s2_08',artist:'Southborder',detail:'TK Tambayan (interview)',type:'int',day:'Thu Apr 24',shoot:'TBD'},
+    {id:'s2_09',artist:'Bruno',detail:'Song 1',type:'perf',day:'Fri Apr 25',shoot:'TBD'},
+    {id:'s2_10',artist:'Bruno',detail:'Song 2',type:'perf',day:'Fri Apr 25',shoot:'TBD'},
+    {id:'s2_11',artist:'Bruno',detail:'TK Tambayan (interview)',type:'int',day:'Sun Apr 27',shoot:'TBD'}
+  ]},
+  {id:'s2_wup',label:'Upcoming Shoots',date:'Apr 28+',cards:[
+    {id:'s2_up1',artist:'Max Ayeza / Solo Female',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Mar 28'},
+    {id:'s2_up2',artist:'Dwala – Nance Kho',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 11'},
+    {id:'s2_up3',artist:'Mad Fish',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 18'},
+    {id:'s2_up4',artist:'TK Tina',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 25'},
+    {id:'s2_up5',artist:'Agaw Agimat',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 2'},
+    {id:'s2_up6',artist:'Warlak',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 9'},
+    {id:'s2_up7',artist:'Hey Moonshine',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 16'},
+    {id:'s2_up8',artist:'Death Threat',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 23'},
+    {id:'s2_up9',artist:'Running Frm Godzilla',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Jun 6'},
+    {id:'s2_up10',artist:'Toyo',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Jun 20'}
+  ]}
+];
+
+var currentSeason=1;
+
 // ============================================================
 // STATE
 // ============================================================
@@ -642,7 +684,8 @@ var youtubeLinks={},cardNotes={},cardWeekAssign={};
 var customWeeks=[],customCards=[],sortOrders={},activityLog=[];
 var activeFilter='all',searchQuery='',activeCard=null,saveTimer=null;
 
-WEEKS.forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
+function getActiveBaseWeeks(){return currentSeason===1?WEEKS:WEEKS_S2;}
+getActiveBaseWeeks().forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
 ['u1','u2','u3','u4','u5','u6'].forEach(function(id){uploadedStatus[id]=true;});
 
 // ============================================================
@@ -717,9 +760,9 @@ function redo(){if(_hi>=_hist.length-1)return;_hi++;_apply(_hist[_hi]);renderBoa
 // ============================================================
 // HELPERS
 // ============================================================
-function getAllWeeks(){return WEEKS.concat(customWeeks);}
+function getAllWeeks(){return getActiveBaseWeeks().concat(customWeeks);}
 function getAllCards(){
-  var a=[];WEEKS.forEach(function(w){a=a.concat(w.cards);});
+  var a=[];getActiveBaseWeeks().forEach(function(w){a=a.concat(w.cards);});
   return a.concat(customCards);
 }
 function findCard(id){return getAllCards().filter(function(c){return c.id===id;})[0]||null;}
@@ -799,8 +842,11 @@ function showSI(state){
 }
 var IS_AS=(typeof google!=='undefined'&&google.script&&google.script.run);
 var LSK='tunog_kalye_state',LSDK='tunog_kalye_deleted';
+var LSK_S2='tunog_kalye_state_s2',LSDK_S2='tunog_kalye_deleted_s2';
 function persistState(){
   showSI('saving');
+  var stKey=currentSeason===1?LSK:LSK_S2;
+  var delKey=currentSeason===1?LSDK:LSDK_S2;
   var state={status:uploadedStatus,details:detailLabels,days:dayOverrides,
     youtube:youtubeLinks,notes:cardNotes,weekAssign:cardWeekAssign,
     customWeeks:customWeeks,customCards:customCards,sortOrders:sortOrders,activity:activityLog};
@@ -809,8 +855,8 @@ function persistState(){
       .withFailureHandler(function(){showSI('error');}).saveState(state);
     google.script.run.saveDeletedCards(Object.keys(deletedCards));
   }else{
-    try{localStorage.setItem(LSK,JSON.stringify(state));
-      localStorage.setItem(LSDK,JSON.stringify(Object.keys(deletedCards)));showSI('saved');}
+    try{localStorage.setItem(stKey,JSON.stringify(state));
+      localStorage.setItem(delKey,JSON.stringify(Object.keys(deletedCards)));showSI('saved');}
     catch(e){showSI('error');}
   }
 }
@@ -985,11 +1031,13 @@ function updateStats(){
   document.getElementById('sb-queue-bar').style.width=total?(queue/total*100)+'%':'0%';
   document.getElementById('bar-overall').style.width=total?(done/total*100)+'%':'0%';
   document.getElementById('pn-overall').textContent=done;document.getElementById('pd-overall').textContent=total;
-  var bC=getCardsForWeek('w0').filter(function(c){return!deletedCards[c.id];});
+  var backlogWid=currentSeason===1?'w0':'s2_w0';
+  var bC=getCardsForWeek(backlogWid).filter(function(c){return!deletedCards[c.id];});
   var bD=bC.filter(function(c){return uploadedStatus[c.id];}).length;
   document.getElementById('bar-backlog').style.width=bC.length?(bD/bC.length*100)+'%':'0%';
   document.getElementById('pn-backlog').textContent=bD;document.getElementById('pd-backlog').textContent=bC.length;
-  var pC=['w1234','w5','w6','w7'].reduce(function(a,wid){return a.concat(getCardsForWeek(wid).filter(function(c){return!deletedCards[c.id];}));},[] );
+  var pipeWids=currentSeason===1?['w1','w2','w3']:['s2_w1'];
+  var pC=pipeWids.reduce(function(a,wid){return a.concat(getCardsForWeek(wid).filter(function(c){return!deletedCards[c.id];}));},[] );
   var pD=pC.filter(function(c){return uploadedStatus[c.id];}).length;
   document.getElementById('bar-pipeline').style.width=pC.length?(pD/pC.length*100)+'%':'0%';
   document.getElementById('pn-pipeline').textContent=pD;document.getElementById('pd-pipeline').textContent=pC.length;
@@ -1131,6 +1179,8 @@ document.querySelectorAll('.filter-btn').forEach(function(btn){
     btn.classList.add('active');activeFilter=btn.dataset.filter;renderBoard();
   });
 });
+document.getElementById('season-s1-btn').addEventListener('click',function(){switchSeason(1);});
+document.getElementById('season-s2-btn').addEventListener('click',function(){switchSeason(2);});
 document.getElementById('search-input').addEventListener('input',function(){searchQuery=this.value.trim();renderBoard();});
 document.getElementById('undo-btn').addEventListener('click',undo);
 document.getElementById('redo-btn').addEventListener('click',redo);
@@ -1302,6 +1352,42 @@ document.getElementById('cal-today-btn').addEventListener('click',function(){
 });
 
 // ============================================================
+// SEASON SWITCH
+// ============================================================
+function switchSeason(n){
+  if(n===currentSeason)return;
+  persistState();
+  currentSeason=n;
+  // Reset all mutable state
+  uploadedStatus={};detailLabels={};deletedCards={};dayOverrides={};
+  youtubeLinks={};cardNotes={};cardWeekAssign={};
+  customWeeks=[];customCards=[];sortOrders={};activityLog=[];
+  activeFilter='all';searchQuery='';
+  var si=document.getElementById('search-input');if(si)si.value='';
+  document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.toggle('active',b.dataset.filter==='all');});
+  // Seed detailLabels from new season base cards
+  getActiveBaseWeeks().forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
+  // Pre-seed S1 uploaded cards
+  if(n===1){['u1','u2','u3','u4','u5','u6'].forEach(function(id){uploadedStatus[id]=true;});}
+  // Load saved state
+  var stKey=n===1?LSK:LSK_S2;
+  var delKey=n===1?LSDK:LSDK_S2;
+  var saved=null;try{var raw=localStorage.getItem(stKey);if(raw)saved=JSON.parse(raw);}catch(e){}
+  var dels=null;try{var rd=localStorage.getItem(delKey);if(rd)dels=JSON.parse(rd);}catch(e){}
+  initBoard(saved);
+  if(dels&&dels.length){dels.forEach(function(id){deletedCards[id]=true;});renderBoard();}
+  _hist=[_snap()];_hi=0;_upUR();
+  updateSeasonUI();
+}
+function updateSeasonUI(){
+  var s1b=document.getElementById('season-s1-btn');
+  var s2b=document.getElementById('season-s2-btn');
+  if(!s1b)return;
+  s1b.classList.toggle('active',currentSeason===1);
+  s2b.classList.toggle('active',currentSeason===2);
+}
+
+// ============================================================
 // INIT
 // ============================================================
 function initBoard(sv){
@@ -1322,6 +1408,7 @@ function initBoard(sv){
   }
   renderBoard();
   _hist=[_snap()];_hi=0;_upUR();
+  updateSeasonUI();
   var ls=document.getElementById('loading-screen');
   ls.classList.add('hidden');
   setTimeout(function(){ls.style.display='none';},350);
