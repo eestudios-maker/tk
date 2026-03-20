@@ -199,6 +199,47 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   .card-tag{border:1px solid #ccc;background:#f5f5f5 !important;color:#333 !important;}
 }
 
+/* ── SCOREBOARD (bottom-left) ───────────────────────── */
+#scoreboard{position:fixed;bottom:24px;left:28px;z-index:200;display:flex;flex-direction:column;gap:6px;pointer-events:none;}
+.score-row{display:flex;align-items:center;gap:10px;}
+.score-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);width:62px;text-align:right;}
+.score-bar-wrap{width:100px;height:4px;background:var(--surface2);border-radius:2px;overflow:hidden;}
+.score-bar{height:100%;border-radius:2px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
+.score-num{font-family:var(--font-display);font-size:15px;letter-spacing:0.04em;min-width:28px;}
+@media print{#scoreboard{display:none;}}
+/* ── CALENDAR VIEW ─────────────────────────────────── */
+.view-toggle{display:flex;align-items:center;gap:3px;margin-left:12px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:3px;}
+.view-btn{background:transparent;border:none;border-radius:6px;padding:5px 12px;font-family:var(--font-body);font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px;}
+.view-btn.active{background:var(--surface);color:var(--accent);box-shadow:0 1px 4px rgba(0,0,0,0.4);}
+.view-btn:not(.active):hover{color:var(--text);}
+#calendar-view{display:none;padding:24px 32px 40px;}
+#calendar-view.visible{display:block;}
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.cal-month-label{font-family:var(--font-display);font-size:28px;letter-spacing:0.06em;color:var(--accent);}
+.cal-nav-btns{display:flex;gap:8px;align-items:center;}
+.cal-nav-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:7px 16px;font-family:var(--font-body);font-size:13px;color:var(--muted);cursor:pointer;transition:all 0.15s;}
+.cal-nav-btn:hover{border-color:#555;color:var(--text);}
+.cal-today-btn{background:transparent;border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-family:var(--font-body);font-size:11px;color:var(--muted);cursor:pointer;transition:all 0.15s;letter-spacing:0.06em;text-transform:uppercase;}
+.cal-today-btn:hover{border-color:var(--accent);color:var(--accent);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;border:1px solid var(--border);}
+.cal-dow{background:var(--surface2);padding:10px 0;text-align:center;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);font-weight:500;}
+.cal-cell{background:var(--surface);min-height:116px;padding:8px;position:relative;transition:background 0.15s;vertical-align:top;}
+.cal-cell.other-month{background:#111;}
+.cal-cell.today{background:rgba(232,255,71,0.04);}
+.cal-cell.today .cal-day-num{color:var(--accent);font-weight:700;background:rgba(232,255,71,0.15);border-radius:50%;}
+.cal-day-num{font-size:12px;color:var(--muted);margin-bottom:5px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
+.cal-chips{display:flex;flex-direction:column;gap:3px;}
+.cal-chip{font-size:10px;padding:2px 6px;border-radius:4px;cursor:pointer;transition:all 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.5;font-weight:500;letter-spacing:0.01em;}
+.cal-chip:hover{filter:brightness(1.3);transform:translateY(-1px);}
+.cal-chip.perf{background:var(--perf-bg);color:var(--perf);border-left:2px solid var(--perf);}
+.cal-chip.int{background:var(--int-bg);color:var(--int);border-left:2px solid var(--int);}
+.cal-chip.shoot{background:var(--shoot-bg);color:var(--shoot);border-left:2px solid var(--shoot);}
+.cal-chip.done{background:var(--done-bg);color:var(--done);border-left:2px solid var(--done);opacity:0.55;}
+.cal-chip.overdue{background:rgba(239,68,68,0.12);color:var(--overdue);border-left:2px solid var(--overdue);}
+.cal-more{font-size:10px;color:var(--muted);margin-top:3px;cursor:default;letter-spacing:0.04em;padding-left:2px;}
+@media print{#calendar-view{display:none!important;}}
+/* ────────────────────────────────────────────────── */
+
 .board-watermark{
   position:fixed;
   bottom:40px;
@@ -226,6 +267,25 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   <div class="loading-dots"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div>
 </div>
 <div id="save-indicator"><div class="save-dot"></div><span id="save-text">Saving…</span></div>
+
+<!-- Bottom-left scoreboard -->
+<div id="scoreboard">
+  <div class="score-row">
+    <div class="score-label">Total</div>
+    <div class="score-bar-wrap"><div class="score-bar" id="sb-total-bar" style="background:var(--border);width:100%"></div></div>
+    <div class="score-num" id="sb-total" style="color:var(--text)">0</div>
+  </div>
+  <div class="score-row">
+    <div class="score-label">Uploaded</div>
+    <div class="score-bar-wrap"><div class="score-bar" id="sb-done-bar" style="background:var(--int);width:0%"></div></div>
+    <div class="score-num" id="sb-done" style="color:var(--int)">0</div>
+  </div>
+  <div class="score-row">
+    <div class="score-label">Queue</div>
+    <div class="score-bar-wrap"><div class="score-bar" id="sb-queue-bar" style="background:var(--shoot);width:0%"></div></div>
+    <div class="score-num" id="sb-queue" style="color:var(--shoot)">0</div>
+  </div>
+</div>
 
 <div id="activity-panel">
   <div class="activity-header">
@@ -256,12 +316,14 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   <!-- Center spacer -->
   <div class="logo-block"></div>
 
-  <!-- Right: stats + buttons -->
+  <!-- Right: action controls -->
   <div class="header-right" style="justify-content:flex-end;">
-    <div class="stat-pill">Total<span id="total-count">0</span></div>
-    <div class="stat-pill">Uploaded<span id="done-count" style="color:var(--int)">0</span></div>
-    <div class="stat-pill">Queue<span id="queue-count" style="color:var(--shoot)">0</span></div>
-    <button class="header-btn" id="print-btn">🖨 Print</button>
+    <button class="ur-btn" id="undo-btn" disabled title="Undo (Ctrl+Z)">&#x21A9; <span class="ur-label">Undo</span></button>
+    <button class="ur-btn" id="redo-btn" disabled title="Redo (Ctrl+Y)">&#x21AA; <span class="ur-label">Redo</span></button>
+    <div class="view-toggle">
+      <button class="view-btn active" id="view-board-btn">&#x268F; Board</button>
+      <button class="view-btn" id="view-cal-btn">&#x1F4C5; Calendar</button>
+    </div>
     <button class="header-btn" id="activity-toggle-btn">📋 Activity</button>
   </div>
 </header>
@@ -277,10 +339,6 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   <div class="search-wrap">
     <span class="search-icon">&#128269;</span>
     <input class="search-input" id="search-input" type="text" placeholder="Search artist…"/>
-  </div>
-  <div class="undo-redo-group">
-    <button class="ur-btn" id="undo-btn" disabled title="Undo (Ctrl+Z)">&#x21A9; <span class="ur-label">Undo</span></button>
-    <button class="ur-btn" id="redo-btn" disabled title="Redo (Ctrl+Y)">&#x21AA; <span class="ur-label">Redo</span></button>
   </div>
 </div>
 
@@ -303,6 +361,17 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 </div>
 
 <div class="board" id="board"></div>
+<div id="calendar-view">
+  <div class="cal-nav">
+    <div class="cal-month-label" id="cal-month-label">April 2026</div>
+    <div class="cal-nav-btns">
+      <button class="cal-today-btn" id="cal-today-btn">Today</button>
+      <button class="cal-nav-btn" id="cal-prev-btn">&#8592;</button>
+      <button class="cal-nav-btn" id="cal-next-btn">&#8594;</button>
+    </div>
+  </div>
+  <div class="cal-grid" id="cal-grid"></div>
+</div>
 
 <!-- MAIN MODAL -->
 <div class="modal-overlay" id="modal-overlay">
@@ -784,9 +853,13 @@ function escHtml(s){return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replac
 function updateStats(){
   var all=getAllCards().filter(function(c){return!deletedCards[c.id];});
   var total=all.length,done=all.filter(function(c){return uploadedStatus[c.id];}).length;
-  document.getElementById('total-count').textContent=total;
-  document.getElementById('done-count').textContent=done;
-  document.getElementById('queue-count').textContent=total-done;
+  // Scoreboard (bottom-left)
+  var queue=total-done;
+  document.getElementById('sb-total').textContent=total;
+  document.getElementById('sb-done').textContent=done;
+  document.getElementById('sb-queue').textContent=queue;
+  document.getElementById('sb-done-bar').style.width=total?(done/total*100)+'%':'0%';
+  document.getElementById('sb-queue-bar').style.width=total?(queue/total*100)+'%':'0%';
   document.getElementById('bar-overall').style.width=total?(done/total*100)+'%':'0%';
   document.getElementById('pn-overall').textContent=done;document.getElementById('pd-overall').textContent=total;
   var bC=getCardsForWeek('w0').filter(function(c){return!deletedCards[c.id];});
@@ -944,7 +1017,7 @@ document.addEventListener('keydown',function(e){
   if((e.ctrlKey||e.metaKey)&&e.key==='z'&&!e.shiftKey){e.preventDefault();undo();}
   if((e.ctrlKey||e.metaKey)&&(e.key==='y'||(e.key==='z'&&e.shiftKey))){e.preventDefault();redo();}
 });
-document.getElementById('print-btn').addEventListener('click',function(){window.print();});
+// print-btn removed
 document.getElementById('activity-toggle-btn').addEventListener('click',function(){
   var p=document.getElementById('activity-panel'),open=p.classList.contains('open');
   p.classList.toggle('open');this.classList.toggle('active',!open);
@@ -953,6 +1026,156 @@ document.getElementById('activity-toggle-btn').addEventListener('click',function
 document.getElementById('activity-close').addEventListener('click',function(){
   document.getElementById('activity-panel').classList.remove('open');
   document.getElementById('activity-toggle-btn').classList.remove('active');
+});
+
+// ============================================================
+// CALENDAR VIEW
+// ============================================================
+var _now=new Date();var calYear=_now.getFullYear(),calMonth=_now.getMonth();
+var MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+function parseCalDate(str){
+  // Parses date strings like "Mar 23 (Mon)", "Mon Apr 7", "Apr 5 (Sun)", "Feb 4", "TBD"
+  if(!str||str==='TBD')return null;
+  str=str.replace(/\s*\(.*?\)/g,'').trim(); // strip "(Mon)" etc
+  var months={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+  // "Mon Apr 7" or "Apr 7"
+  var m=str.match(/([A-Za-z]+)\s+(\d+)/);
+  if(m){
+    var mn=m[1].substring(0,3);
+    var mn2=m[2].substring ? m[2].substring(0,3) : null;
+    // Try first token as month
+    if(months[mn]!==undefined){
+      return new Date(2026,months[mn],parseInt(m[2]));
+    }
+    // Try second token as month (e.g. "Mon Apr 7")
+    var m2=str.match(/[A-Za-z]+\s+([A-Za-z]+)\s+(\d+)/);
+    if(m2&&months[m2[1].substring(0,3)]!==undefined){
+      return new Date(2026,months[m2[1].substring(0,3)],parseInt(m2[2]));
+    }
+  }
+  return null;
+}
+
+function getCalCards(){
+  var result=[];
+  getAllCards().forEach(function(c){
+    if(deletedCards[c.id])return;
+    var day=dayOverrides[c.id]||c.day;
+    var d=parseCalDate(day);
+    if(!d)return;
+    var status=cardDateStatus(c);
+    result.push({card:c,date:d,status:status});
+  });
+  return result;
+}
+
+function renderCalendar(){
+  var label=document.getElementById('cal-month-label');
+  label.textContent=MONTH_NAMES[calMonth]+' '+calYear;
+
+  var grid=document.getElementById('cal-grid');
+  grid.innerHTML='';
+
+  // Day-of-week headers
+  DOW.forEach(function(d){
+    var el=document.createElement('div');
+    el.className='cal-dow';el.textContent=d;grid.appendChild(el);
+  });
+
+  // First day of month
+  var first=new Date(calYear,calMonth,1);
+  var startDow=first.getDay(); // 0=Sun
+  var daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  var daysInPrev=new Date(calYear,calMonth,0).getDate();
+
+  // Gather cards for this month
+  var cards=getCalCards();
+  var byDay={};
+  cards.forEach(function(item){
+    if(item.date.getFullYear()===calYear&&item.date.getMonth()===calMonth){
+      var d=item.date.getDate();
+      if(!byDay[d])byDay[d]=[];
+      byDay[d].push(item);
+    }
+  });
+
+  var today=new Date();
+  var totalCells=Math.ceil((startDow+daysInMonth)/7)*7;
+
+  for(var i=0;i<totalCells;i++){
+    var cell=document.createElement('div');
+    var dayNum,isOther=false,monthOff=0;
+
+    if(i<startDow){
+      dayNum=daysInPrev-startDow+i+1;isOther=true;monthOff=-1;
+    } else if(i>=startDow+daysInMonth){
+      dayNum=i-startDow-daysInMonth+1;isOther=true;monthOff=1;
+    } else {
+      dayNum=i-startDow+1;
+    }
+
+    cell.className='cal-cell'+(isOther?' other-month':'');
+    var isToday=(!isOther&&dayNum===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear());
+    if(isToday)cell.classList.add('today');
+
+    var dn=document.createElement('div');dn.className='cal-day-num';dn.textContent=dayNum;
+    cell.appendChild(dn);
+
+    if(!isOther&&byDay[dayNum]){
+      var chips=document.createElement('div');chips.className='cal-chips';
+      var items=byDay[dayNum];
+      var MAX_CHIPS=3;
+      items.slice(0,MAX_CHIPS).forEach(function(item){
+        var chip=document.createElement('div');
+        var st=uploadedStatus[item.card.id]?'done':item.status==='overdue'?'overdue':item.card.type;
+        chip.className='cal-chip '+st;
+        chip.textContent=item.card.artist;
+        chip.title=(detailLabels[item.card.id]||item.card.detail);
+        chip.addEventListener('click',function(e){e.stopPropagation();openModal(item.card);});
+        chips.appendChild(chip);
+      });
+      if(items.length>MAX_CHIPS){
+        var more=document.createElement('div');more.className='cal-more';
+        more.textContent='+'+(items.length-MAX_CHIPS)+' more';chips.appendChild(more);
+      }
+      cell.appendChild(chips);
+    }
+    grid.appendChild(cell);
+  }
+}
+
+// View toggle
+var currentView='board';
+function switchView(v){
+  currentView=v;
+  var board=document.getElementById('board');
+  var cal=document.getElementById('calendar-view');
+  var bBtn=document.getElementById('view-board-btn');
+  var cBtn=document.getElementById('view-cal-btn');
+  var watermark=document.querySelector('.board-watermark');
+  if(v==='board'){
+    board.style.display='';cal.classList.remove('visible');
+    bBtn.classList.add('active');cBtn.classList.remove('active');
+    if(watermark)watermark.style.display='';
+  } else {
+    board.style.display='none';cal.classList.add('visible');
+    cBtn.classList.add('active');bBtn.classList.remove('active');
+    if(watermark)watermark.style.display='none';
+    renderCalendar();
+  }
+}
+document.getElementById('view-board-btn').addEventListener('click',function(){switchView('board');});
+document.getElementById('view-cal-btn').addEventListener('click',function(){switchView('cal');});
+document.getElementById('cal-prev-btn').addEventListener('click',function(){
+  calMonth--;if(calMonth<0){calMonth=11;calYear--;}renderCalendar();
+});
+document.getElementById('cal-next-btn').addEventListener('click',function(){
+  calMonth++;if(calMonth>11){calMonth=0;calYear++;}renderCalendar();
+});
+document.getElementById('cal-today-btn').addEventListener('click',function(){
+  var t=new Date();calYear=t.getFullYear();calMonth=t.getMonth();renderCalendar();
 });
 
 // ============================================================
