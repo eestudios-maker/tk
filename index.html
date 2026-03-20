@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Tunog Kalye — Upload Schedule</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
 <style>
@@ -44,7 +44,7 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .header-btn{background:transparent;border:1px solid var(--border);border-radius:7px;padding:6px 12px;font-family:var(--font-body);font-size:11px;color:var(--muted);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:5px;}
 .header-btn:hover{border-color:#444;color:var(--text);}
 .header-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(232,255,71,0.06);}
-.filter-bar{padding:10px 32px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);}
+.filter-bar{padding:10px 32px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;}
 .filter-label{font-size:11px;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;margin-right:4px;}
 .filter-btn{background:transparent;border:1px solid var(--border);border-radius:6px;padding:5px 13px;font-family:var(--font-body);font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;}
 .filter-btn:hover{border-color:#444;color:var(--text);}
@@ -66,7 +66,7 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .prog-bar{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
 .prog-nums{font-size:11px;color:var(--muted);}
 .prog-nums b{color:var(--text);font-weight:500;}
-.board{display:flex;gap:0;padding:20px 32px 40px;overflow-x:auto;min-height:calc(100vh - 200px);align-items:flex-start;}
+.board{display:flex;gap:0;padding:20px 32px 40px;overflow-x:auto;-webkit-overflow-scrolling:touch;min-height:calc(100vh - 200px);align-items:flex-start;}
 .column{flex:0 0 auto;width:274px;margin-right:14px;}
 .col-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(180deg,var(--surface2) 0%,var(--surface) 100%);border:1px solid var(--border);border-radius:10px 10px 0 0;border-bottom:2px solid var(--accent);margin-bottom:2px;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
 .col-title-wrap{flex:1;min-width:0;}
@@ -258,6 +258,130 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   object-fit:contain;
 }
 @media print{.board-watermark{display:none;}}
+
+/* ── RESPONSIVE ─────────────────────────────────── */
+
+/* Tablet: 768px and below */
+@media (max-width: 768px) {
+  header {
+    grid-template-columns: 1fr auto;
+    padding: 8px 16px;
+    gap: 8px;
+  }
+  .logo-block { display: none; }
+  .header-left { gap: 8px; }
+  .logo-divider { height: 24px; }
+  .logo-sub { font-size: 9px; }
+  .header-right {
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: flex-end !important;
+  }
+  .ur-label { display: none; }
+  .ur-btn { padding: 5px 8px; }
+  .view-toggle { margin-left: 0; }
+  .view-btn { padding: 4px 8px; font-size: 11px; }
+  .header-btn { padding: 5px 8px; font-size: 11px; }
+
+  .filter-bar {
+    padding: 8px 12px;
+    gap: 5px;
+  }
+  .filter-label { display: none; }
+  .filter-btn { padding: 4px 10px; font-size: 11px; }
+  .search-input { width: 120px; }
+
+  .progress-section {
+    padding: 12px 16px 0;
+    gap: 10px;
+  }
+  .prog-card { min-width: 140px; padding: 10px 12px; }
+
+  .board {
+    padding: 14px 12px 40px;
+    gap: 0;
+  }
+  .column { width: 240px; margin-right: 10px; }
+
+  /* Scoreboard smaller on tablet */
+  #scoreboard { left: 14px; bottom: 16px; }
+  .score-label { font-size: 9px; width: 52px; }
+  .score-bar-wrap { width: 72px; }
+  .score-num { font-size: 13px; }
+
+  /* Calendar */
+  #calendar-view { padding: 16px 12px 40px; }
+  .cal-cell { min-height: 80px; }
+
+  /* Watermark smaller */
+  .board-watermark { width: 200px; height: 200px; right: 20px; bottom: 20px; }
+}
+
+/* Mobile: 480px and below */
+@media (max-width: 480px) {
+  header {
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  header svg { width: 34px; height: 34px; }
+  .logo-sub { display: none; }
+  .logo-divider { display: none; }
+
+  .header-right { gap: 4px; }
+  .view-btn { padding: 4px 7px; font-size: 10px; }
+  .header-btn { font-size: 10px; padding: 4px 7px; }
+
+  .filter-bar { padding: 6px 10px; gap: 4px; overflow-x: auto; flex-wrap: nowrap; }
+  .filter-btn { padding: 4px 8px; font-size: 11px; white-space: nowrap; flex-shrink: 0; }
+  .search-wrap { flex-shrink: 0; }
+  .search-input { width: 100px; font-size: 11px; }
+  .undo-redo-group { flex-shrink: 0; }
+
+  .progress-section {
+    padding: 10px 10px 0;
+    gap: 8px;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+  .prog-card { min-width: 130px; padding: 8px 10px; flex-shrink: 0; }
+  .prog-title { font-size: 9px; }
+  .prog-nums { font-size: 10px; }
+
+  .board { padding: 10px 8px 40px; }
+  .column { width: 220px; margin-right: 8px; }
+  .col-title { font-size: 14px; }
+  .card { padding: 8px 10px; }
+  .card-artist { font-size: 12px; }
+  .card-tag { font-size: 9px; padding: 2px 5px; }
+  .card-detail { font-size: 10px; }
+  .card-day { font-size: 9px; }
+
+  /* Scoreboard hidden on small mobile — takes too much space */
+  #scoreboard { display: none; }
+
+  /* Activity panel full-width */
+  #activity-panel { width: 100%; }
+
+  /* Calendar responsive */
+  #calendar-view { padding: 10px 8px 40px; }
+  .cal-month-label { font-size: 20px; }
+  .cal-cell { min-height: 60px; padding: 4px; }
+  .cal-chip { font-size: 9px; padding: 1px 4px; }
+  .cal-day-num { font-size: 10px; width: 18px; height: 18px; }
+
+  /* Watermark tiny on mobile */
+  .board-watermark { width: 120px; height: 120px; right: 8px; bottom: 10px; opacity: 0.08; }
+
+  /* Save indicator */
+  #save-indicator { bottom: 10px; right: 10px; font-size: 10px; padding: 6px 10px; }
+}
+
+/* Very small: 360px */
+@media (max-width: 360px) {
+  .column { width: 190px; }
+  .filter-btn { font-size: 10px; padding: 3px 7px; }
+  .view-btn { font-size: 9px; }
+}
 </style>
 </head>
 <body>
