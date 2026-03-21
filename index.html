@@ -584,66 +584,43 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 // DATA
 // ============================================================
 var WEEKS=[
-  {id:'w0',label:'Already Uploaded',date:'Before Mar 23',cards:[
-    {id:'u1',artist:'Mojofly',detail:'Mr. Kupido (Live Performance)',type:'perf',day:'Feb 4',shoot:'Dec 2, 2025'},
-    {id:'u2',artist:'Grin Department',detail:'Miss U (Miss Sa Loob Ng Jeepney)',type:'perf',day:'Feb 22',shoot:'Nov 24, 2025'},
-    {id:'u3',artist:'Side A',detail:'TK Tambayan (interview)',type:'int',day:'Mar 1',shoot:'Feb 25'},
-    {id:'u4',artist:'Side A',detail:'Kahit Man Lang Sandali',type:'perf',day:'Mar 8',shoot:'Feb 25'},
-    {id:'u5',artist:'Mojofly',detail:'TK Tambayan (interview)',type:'int',day:'Mar 13',shoot:'Dec 2, 2025'},
-    {id:'u6',artist:'Zelle',detail:'Sabihin',type:'perf',day:'Mar 16',shoot:'Nov 15, 2025'}
+  {id:'w0',label:'Already Uploaded',date:'Before Mar 25',cards:[
+    {id:'d1',artist:'Mojofly',detail:'TK Vid',type:'perf',day:'Mar 9',shoot:'TBD'},
+    {id:'d2',artist:'Side A',detail:'TK Tambayan (interview)',type:'int',day:'Mar 16',shoot:'TBD'},
+    {id:'d3',artist:'Everything Entertainment',detail:'EE LED Billboard',type:'perf',day:'Mar 23',shoot:'TBD'}
   ]},
-  {id:'w1',label:'Week 1',date:'Mar 25 \u2013 30',cards:[
-    {id:'w1_01',artist:'Pin-up Girls',detail:'Song 1',type:'perf',day:'Tue Mar 25',shoot:'Nov 14, 2025'},
-    {id:'w1_02',artist:'Pin-up Girls',detail:'Song 2',type:'perf',day:'Tue Mar 25',shoot:'Nov 14, 2025'},
-    {id:'w1_03',artist:'Pin-up Girls',detail:'TK Tambayan (interview)',type:'int',day:'Tue Mar 25',shoot:'Nov 14, 2025'},
-    {id:'w1_04',artist:'Grin Department',detail:'Song 1',type:'perf',day:'Wed Mar 26',shoot:'Nov 24, 2025'},
-    {id:'w1_05',artist:'Grin Department',detail:'TK Tambayan (interview)',type:'int',day:'Wed Mar 26',shoot:'Nov 24, 2025'},
-    {id:'w1_06',artist:'TK Promo',detail:'Promo #1',type:'perf',day:'Wed Mar 26',shoot:'TBD'},
-    {id:'w1_07',artist:'Zelle',detail:'Song 1',type:'perf',day:'Thu Mar 27',shoot:'Nov 15, 2025'},
-    {id:'w1_08',artist:'Zelle',detail:'TK Tambayan (interview)',type:'int',day:'Thu Mar 27',shoot:'Nov 15, 2025'},
-    {id:'w1_09',artist:'TK Promo',detail:'Promo #2',type:'perf',day:'Thu Mar 27',shoot:'TBD'},
-    {id:'w1_10',artist:"Datu's Tribe",detail:'TK Tambayan (interview)',type:'int',day:'Fri Mar 28',shoot:'Nov 27, 2025'},
-    {id:'w1_11',artist:'Mojofly',detail:'Song 1',type:'perf',day:'Fri Mar 28',shoot:'Dec 2, 2025'},
-    {id:'w1_12',artist:'Mutiny',detail:'Song 1',type:'perf',day:'Sun Mar 30',shoot:'Feb 7'},
-    {id:'w1_13',artist:'Mutiny',detail:'Song 2',type:'perf',day:'Sun Mar 30',shoot:'Feb 7'},
-    {id:'w1_14',artist:'Mutiny',detail:'TK Tambayan (interview)',type:'int',day:'Sun Mar 30',shoot:'Feb 7'}
+  {id:'w1',label:'Week 1',date:'Mar 25 – 30',cards:[
+    {id:'v1_01',artist:'Zelle',detail:'TK Tambayan (interview)',type:'int',day:'Tue Mar 25',shoot:'TBD'},
+    {id:'v1_02',artist:'Grin Department',detail:'8 Pa (Live Performance)',type:'perf',day:'Tue Mar 25',shoot:'TBD'},
+    {id:'v1_03',artist:'Grin Department',detail:'TK Tambayan (interview)',type:'int',day:'Wed Mar 26',shoot:'TBD'},
+    {id:'v1_04',artist:'Side A',detail:'Song 1',type:'perf',day:'Wed Mar 26',shoot:'TBD'},
+    {id:'v1_05',artist:'Side A',detail:'Song 2',type:'perf',day:'Thu Mar 27',shoot:'TBD'},
+    {id:'v1_06',artist:'Nextone',detail:'Song 1',type:'perf',day:'Thu Mar 27',shoot:'TBD'},
+    {id:'v1_07',artist:'Nextone',detail:'Song 2',type:'perf',day:'Fri Mar 28',shoot:'TBD'},
+    {id:'v1_08',artist:'Nextone',detail:'TK Tambayan (interview)',type:'int',day:'Fri Mar 28',shoot:'TBD'},
+    {id:'v1_09',artist:'Mutiny',detail:'Song 1',type:'perf',day:'Sun Mar 30',shoot:'TBD'},
+    {id:'v1_10',artist:'Mutiny',detail:'Song 2',type:'perf',day:'Sun Mar 30',shoot:'TBD'}
   ]},
-  {id:'w2',label:'Week 2',date:'Apr 1 \u2013 6',cards:[
-    {id:'w2_01',artist:'Nextone',detail:'Song 1',type:'perf',day:'Tue Apr 1',shoot:'Nov 21, 2025'},
-    {id:'w2_02',artist:'Nextone',detail:'Song 2',type:'perf',day:'Tue Apr 1',shoot:'Nov 21, 2025'},
-    {id:'w2_03',artist:'Nextone',detail:'TK Tambayan (interview)',type:'int',day:'Tue Apr 1',shoot:'Nov 21, 2025'},
-    {id:'w2_04',artist:'Aurora',detail:'Song 1',type:'perf',day:'Wed Apr 2',shoot:'Feb 21'},
-    {id:'w2_05',artist:'Aurora',detail:'Song 2',type:'perf',day:'Wed Apr 2',shoot:'Feb 21'},
-    {id:'w2_06',artist:'Aurora',detail:'TK Tambayan (interview)',type:'int',day:'Wed Apr 2',shoot:'Feb 21'},
-    {id:'w2_07',artist:'Side A',detail:'Song 1',type:'perf',day:'Thu Apr 3',shoot:'Feb 25'},
-    {id:'w2_08',artist:'Side A',detail:'Song 2',type:'perf',day:'Thu Apr 3',shoot:'Feb 25'},
-    {id:'w2_09',artist:'TK Promo',detail:'Promo #3',type:'perf',day:'Thu Apr 3',shoot:'TBD'},
-    {id:'w2_10',artist:'Yun',detail:'Song 1',type:'perf',day:'Fri Apr 4',shoot:'Feb 28'},
-    {id:'w2_11',artist:'Yun',detail:'Song 2',type:'perf',day:'Fri Apr 4',shoot:'Feb 28'},
-    {id:'w2_12',artist:'TK Promo',detail:'Promo #4',type:'perf',day:'Fri Apr 4',shoot:'TBD'},
-    {id:'w2_13',artist:'Yun',detail:'Song 3',type:'perf',day:'Sun Apr 6',shoot:'Feb 28'},
-    {id:'w2_14',artist:'Yun',detail:'TK Tambayan (interview)',type:'int',day:'Sun Apr 6',shoot:'Feb 28'},
-    {id:'w2_15',artist:'TK Promo',detail:'Promo #5',type:'perf',day:'Sun Apr 6',shoot:'TBD'}
+  {id:'w2',label:'Week 2',date:'Apr 1 – 6',cards:[
+    {id:'v2_01',artist:'Mutiny',detail:'Song 3',type:'perf',day:'Tue Apr 1',shoot:'TBD'},
+    {id:'v2_02',artist:'Mutiny',detail:'TK Tambayan (interview)',type:'int',day:'Tue Apr 1',shoot:'TBD'},
+    {id:'v2_03',artist:'Aurora',detail:'Song 1',type:'perf',day:'Wed Apr 2',shoot:'TBD'},
+    {id:'v2_04',artist:'Aurora',detail:'Song 2',type:'perf',day:'Wed Apr 2',shoot:'TBD'},
+    {id:'v2_05',artist:'Aurora',detail:'Song 3',type:'perf',day:'Thu Apr 3',shoot:'TBD'},
+    {id:'v2_06',artist:'Aurora',detail:'TK Tambayan (interview)',type:'int',day:'Thu Apr 3',shoot:'TBD'},
+    {id:'v2_07',artist:'Yun',detail:'Song 1',type:'perf',day:'Fri Apr 4',shoot:'TBD'},
+    {id:'v2_08',artist:'Yun',detail:'Song 2',type:'perf',day:'Fri Apr 4',shoot:'TBD'},
+    {id:'v2_09',artist:'Yun',detail:'Song 3',type:'perf',day:'Sun Apr 6',shoot:'TBD'},
+    {id:'v2_10',artist:'Yun',detail:'TK Tambayan (interview)',type:'int',day:'Sun Apr 6',shoot:'TBD'}
   ]},
-  {id:'w3',label:'Week 3',date:'Apr 8 \u2013 13',cards:[
-    {id:'w3_01',artist:'Chronoscythe',detail:'Song 1',type:'perf',day:'Tue Apr 8',shoot:'Mar 7'},
-    {id:'w3_02',artist:'Chronoscythe',detail:'TK Tambayan (interview)',type:'int',day:'Tue Apr 8',shoot:'Mar 7'},
-    {id:'w3_03',artist:'TK Promo',detail:'Promo #6',type:'perf',day:'Wed Apr 9',shoot:'TBD'}
+  {id:'w3',label:'Week 3',date:'Apr 8 – 12',cards:[
+    {id:'v3_01',artist:'TK Promo',detail:'Promo Vid #1',type:'perf',day:'Tue Apr 8',shoot:'TBD'},
+    {id:'v3_02',artist:'TK Promo',detail:'Promo Vid #2',type:'perf',day:'Tue Apr 8',shoot:'TBD'},
+    {id:'v3_03',artist:'TK Promo',detail:'Promo Vid #3',type:'perf',day:'Wed Apr 9',shoot:'TBD'},
+    {id:'v3_04',artist:'TK Promo',detail:'Promo Vid #4',type:'perf',day:'Thu Apr 10',shoot:'TBD'},
+    {id:'v3_05',artist:'TK Promo',detail:'Promo Vid #5',type:'perf',day:'Fri Apr 11',shoot:'TBD'}
   ]},
-  {id:'wup',label:'Upcoming Shoots',date:'Apr 28+',cards:[
-    {id:'up1',artist:'Max Ayeza / Solo Female',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Mar 28'},
-    {id:'up2',artist:'Holy Week',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 4'},
-    {id:'up3',artist:'Dwala - Nance Kho',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 11'},
-    {id:'up4',artist:'Mad Fish',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 18'},
-    {id:'up5',artist:'Tk Tina',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Apr 25'},
-    {id:'up6',artist:'Agaw Agimat',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 2'},
-    {id:'up7',artist:'Warlak',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 9'},
-    {id:'up8',artist:'Hey Moonshine',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 16'},
-    {id:'up9',artist:'Death Threat',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'May 23'},
-    {id:'up10',artist:'Running Frm Godzilla',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Jun 6'},
-    {id:'up11',artist:'Toyo',detail:'To be scheduled',type:'shoot',day:'TBD',shoot:'Jun 20'}
-  ]}
-];
+  {id:'wup',label:'Upcoming Shoots',date:'',cards:[]}];
 
 var WEEKS_S2=[
   {id:'s2_w0',label:'Already Uploaded',date:'Before Apr 20',cards:[]},
@@ -686,7 +663,7 @@ var activeFilter='all',searchQuery='',activeCard=null,saveTimer=null;
 
 function getActiveBaseWeeks(){return currentSeason===1?WEEKS:WEEKS_S2;}
 getActiveBaseWeeks().forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
-['u1','u2','u3','u4','u5','u6'].forEach(function(id){uploadedStatus[id]=true;});
+['d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});
 
 // ============================================================
 // DATE / OVERDUE
@@ -1368,7 +1345,7 @@ function switchSeason(n){
   // Seed detailLabels from new season base cards
   getActiveBaseWeeks().forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
   // Pre-seed S1 uploaded cards
-  if(n===1){['u1','u2','u3','u4','u5','u6'].forEach(function(id){uploadedStatus[id]=true;});}
+  if(n===1){['d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});}
   // Load saved state
   var stKey=n===1?LSK:LSK_S2;
   var delKey=n===1?LSDK:LSDK_S2;
