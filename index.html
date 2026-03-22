@@ -267,6 +267,33 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .season-btn.active{background:var(--accent);color:#0e0e0e;box-shadow:0 1px 4px rgba(0,0,0,0.4);}
 .season-btn:not(.active):hover{color:var(--text);}
 
+
+/* ── MINI DATE PICKER ───────────────────────────────── */
+#date-picker{
+  position:fixed;z-index:500;
+  background:var(--surface);border:1px solid #3a3a3a;border-radius:12px;
+  padding:12px;width:234px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.6),0 2px 8px rgba(0,0,0,0.4);
+  display:none;animation:slideUp 0.15s ease;
+  user-select:none;
+}
+#date-picker.open{display:block;}
+.dp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.dp-month-label{font-family:var(--font-display);font-size:15px;letter-spacing:0.06em;color:var(--accent);}
+.dp-nav{background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer;padding:2px 7px;border-radius:5px;transition:color 0.15s;}
+.dp-nav:hover{color:var(--accent);}
+.dp-dow-row{display:grid;grid-template-columns:repeat(7,1fr);margin-bottom:4px;}
+.dp-dow{text-align:center;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding:2px 0;}
+.dp-days{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.dp-day{text-align:center;padding:5px 2px;font-size:11px;border-radius:5px;cursor:pointer;color:var(--muted);transition:all 0.12s;line-height:1.2;}
+.dp-day:hover:not(.dp-empty){background:rgba(232,255,71,0.12);color:var(--accent);}
+.dp-day.dp-today{color:var(--accent);font-weight:700;}
+.dp-day.dp-selected{background:var(--accent);color:#0e0e0e;font-weight:700;}
+.dp-day.dp-other-month{opacity:0.22;}
+.dp-day.dp-empty{cursor:default;}
+.dp-clear{display:block;width:100%;margin-top:8px;padding:5px;background:transparent;border:1px dashed #333;border-radius:6px;font-family:var(--font-body);font-size:11px;color:var(--muted);cursor:pointer;transition:all 0.12s;letter-spacing:0.04em;}
+.dp-clear:hover{border-color:#555;color:var(--text);}
+
 /* ── RESPONSIVE ─────────────────────────────────── */
 
 /* Tablet: 768px and below */
@@ -507,6 +534,21 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   <div class="cal-grid" id="cal-grid"></div>
 </div>
 
+<div id="date-picker">
+  <div class="dp-header">
+    <button class="dp-nav" id="dp-prev">&#8592;</button>
+    <div class="dp-month-label" id="dp-month-label"></div>
+    <button class="dp-nav" id="dp-next">&#8594;</button>
+  </div>
+  <div class="dp-dow-row">
+    <div class="dp-dow">Su</div><div class="dp-dow">Mo</div><div class="dp-dow">Tu</div>
+    <div class="dp-dow">We</div><div class="dp-dow">Th</div><div class="dp-dow">Fr</div>
+    <div class="dp-dow">Sa</div>
+  </div>
+  <div class="dp-days" id="dp-days"></div>
+  <button class="dp-clear" id="dp-clear">Set as TBD</button>
+</div>
+
 <!-- MAIN MODAL -->
 <div class="modal-overlay" id="modal-overlay">
   <div class="modal">
@@ -530,8 +572,14 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
       <textarea class="field-textarea" id="m-notes-input" placeholder="e.g. waiting on thumbnail, edit in progress…"></textarea>
     </div>
     <div class="modal-row"><span class="modal-row-label">Week</span><span class="modal-row-val" id="m-week"></span></div>
-    <div class="modal-row"><span class="modal-row-label">Upload day</span><span class="modal-row-val" id="m-day"></span></div>
-    <div class="modal-row"><span class="modal-row-label">Shoot date</span><span class="modal-row-val" id="m-shoot"></span></div>
+    <div class="modal-field-row">
+      <div class="modal-field-label">Upload day</div>
+      <input class="field-input" id="m-day-input" type="text" placeholder="e.g. Tue Apr 8 or TBD"/>
+    </div>
+    <div class="modal-field-row">
+      <div class="modal-field-label">Shoot date</div>
+      <input class="field-input" id="m-shoot-input" type="text" placeholder="e.g. Mar 21 or TBD"/>
+    </div>
     <div class="modal-row"><span class="modal-row-label">Status</span><span class="modal-row-val" id="m-status"></span></div>
     <div class="modal-actions" id="modal-actions">
       <button class="btn btn-primary" id="m-toggle-btn">Mark as uploaded</button>
@@ -585,8 +633,14 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 // ============================================================
 var WEEKS=[
   {id:'w0',label:'Already Uploaded',date:'Before Mar 25',cards:[
-    {id:'d1',artist:'Mojofly',detail:'TK Vid',type:'perf',day:'Mar 9',shoot:'TBD'},
-    {id:'d2',artist:'Side A',detail:'TK Tambayan (interview)',type:'int',day:'Mar 16',shoot:'TBD'},
+    {id:'u1',artist:'Mojofly',detail:'Mr. Kupido (Live Performance)',type:'perf',day:'Feb 4',shoot:'Dec 2, 2025'},
+    {id:'u2',artist:'Grin Department',detail:'Miss U (Miss Sa Loob Ng Jeepney)',type:'perf',day:'Feb 22',shoot:'Nov 24, 2025'},
+    {id:'u3',artist:'Side A',detail:'TK Tambayan (interview)',type:'int',day:'Mar 1',shoot:'Feb 25'},
+    {id:'u4',artist:'Side A',detail:'Kahit Man Lang Sandali',type:'perf',day:'Mar 8',shoot:'Feb 25'},
+    {id:'u5',artist:'Mojofly',detail:'TK Tambayan (interview)',type:'int',day:'Mar 13',shoot:'Dec 2, 2025'},
+    {id:'u6',artist:'Zelle',detail:'Sabihin',type:'perf',day:'Mar 16',shoot:'Nov 15, 2025'},
+    {id:'d1',artist:'Mojofly',detail:'TK Vid',type:'perf',day:'Mar 18',shoot:'TBD'},
+    {id:'d2',artist:'Side A',detail:'TK Tambayan',type:'int',day:'Mar 20',shoot:'TBD'},
     {id:'d3',artist:'Everything Entertainment',detail:'EE LED Billboard',type:'perf',day:'Mar 23',shoot:'TBD'}
   ]},
   {id:'w1',label:'Week 1',date:'Mar 25 – 30',cards:[
@@ -656,14 +710,14 @@ var currentSeason=1;
 // ============================================================
 // STATE
 // ============================================================
-var uploadedStatus={},detailLabels={},deletedCards={},dayOverrides={};
+var uploadedStatus={},detailLabels={},deletedCards={},dayOverrides={},shootOverrides={};
 var youtubeLinks={},cardNotes={},cardWeekAssign={};
-var customWeeks=[],customCards=[],sortOrders={},activityLog=[];
+var customWeeks=[],customCards=[],sortOrders={},activityLog=[],cardOrder={};
 var activeFilter='all',searchQuery='',activeCard=null,saveTimer=null;
 
 function getActiveBaseWeeks(){return currentSeason===1?WEEKS:WEEKS_S2;}
 getActiveBaseWeeks().forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
-['d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});
+['u1','u2','u3','u4','u5','u6','d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});
 
 // ============================================================
 // DATE / OVERDUE
@@ -694,18 +748,20 @@ function cardDateStatus(c){
 // ============================================================
 var _hist=[],_hi=-1,MAX_H=50;
 function _snap(){
-  var cd={};
-  getAllCards().forEach(function(c){cd[c.id]=c.day;});
+  var cd={},cs={};
+  getAllCards().forEach(function(c){cd[c.id]=c.day;cs[c.id]=c.shoot;});
   return{uploadedStatus:JSON.parse(JSON.stringify(uploadedStatus)),
     detailLabels:JSON.parse(JSON.stringify(detailLabels)),
     deletedCards:JSON.parse(JSON.stringify(deletedCards)),
     dayOverrides:JSON.parse(JSON.stringify(dayOverrides)),
+    shootOverrides:JSON.parse(JSON.stringify(shootOverrides)),
     youtubeLinks:JSON.parse(JSON.stringify(youtubeLinks)),
     cardNotes:JSON.parse(JSON.stringify(cardNotes)),
     cardWeekAssign:JSON.parse(JSON.stringify(cardWeekAssign)),
     customWeeks:JSON.parse(JSON.stringify(customWeeks)),
     customCards:JSON.parse(JSON.stringify(customCards)),
-    cardDays:cd};
+    cardOrder:JSON.parse(JSON.stringify(cardOrder)),
+    cardDays:cd,cardShoots:cs};
 }
 function _apply(s){
   uploadedStatus=JSON.parse(JSON.stringify(s.uploadedStatus));
@@ -717,7 +773,12 @@ function _apply(s){
   cardWeekAssign=JSON.parse(JSON.stringify(s.cardWeekAssign));
   customWeeks=JSON.parse(JSON.stringify(s.customWeeks));
   customCards=JSON.parse(JSON.stringify(s.customCards));
-  getAllCards().forEach(function(c){if(s.cardDays&&s.cardDays[c.id]!==undefined)c.day=s.cardDays[c.id];});
+  if(s.shootOverrides)shootOverrides=JSON.parse(JSON.stringify(s.shootOverrides));
+  if(s.cardOrder)cardOrder=JSON.parse(JSON.stringify(s.cardOrder));
+  getAllCards().forEach(function(c){
+    if(s.cardDays&&s.cardDays[c.id]!==undefined)c.day=s.cardDays[c.id];
+    if(s.cardShoots&&s.cardShoots[c.id]!==undefined)c.shoot=s.cardShoots[c.id];
+  });
 }
 function pushHistory(){
   _hist=_hist.slice(0,_hi+1);
@@ -824,9 +885,9 @@ function persistState(){
   showSI('saving');
   var stKey=currentSeason===1?LSK:LSK_S2;
   var delKey=currentSeason===1?LSDK:LSDK_S2;
-  var state={status:uploadedStatus,details:detailLabels,days:dayOverrides,
+  var state={status:uploadedStatus,details:detailLabels,days:dayOverrides,shoots:shootOverrides,
     youtube:youtubeLinks,notes:cardNotes,weekAssign:cardWeekAssign,
-    customWeeks:customWeeks,customCards:customCards,sortOrders:sortOrders,activity:activityLog};
+    customWeeks:customWeeks,customCards:customCards,sortOrders:sortOrders,cardOrder:cardOrder,activity:activityLog};
   if(IS_AS){
     google.script.run.withSuccessHandler(function(r){showSI(r&&r.success?'saved':'error');})
       .withFailureHandler(function(){showSI('error');}).saveState(state);
@@ -845,7 +906,17 @@ var SM=['default','date','artist','type'];
 var SI={default:'\u21C5',date:'\uD83D\uDCC5',artist:'\uD83D\uDD24',type:'\uD83C\uDFF7'};
 function sortedCards(wid,cards){
   var m=sortOrders[wid]||'default';
-  if(m==='default')return cards.slice();
+  if(m==='default'){
+    // Apply custom order if any
+    if(cardOrder[wid]&&cardOrder[wid].length){
+      var order=cardOrder[wid];
+      return cards.slice().sort(function(a,b){
+        var ia=order.indexOf(a.id),ib=order.indexOf(b.id);
+        if(ia===-1)ia=9999;if(ib===-1)ib=9999;return ia-ib;
+      });
+    }
+    return cards.slice();
+  }
   return cards.slice().sort(function(a,b){
     if(m==='artist')return a.artist.localeCompare(b.artist);
     if(m==='type')return a.type.localeCompare(b.type);
@@ -931,12 +1002,35 @@ function renderBoard(){
       e.preventDefault();cardsEl.classList.remove('drag-over');
       var did=e.dataTransfer.getData('text/plain');if(!did)return;
       var twid=cardsEl.dataset.week;
-      if((cardWeekAssign[did]||getOrigWeekId(findCard(did)))!==twid){
+      var srcWid=cardWeekAssign[did]||getOrigWeekId(findCard(did));
+      // Find drop target position
+      var dropTarget=null;
+      var cardEls=cardsEl.querySelectorAll('.card');
+      for(var ci=0;ci<cardEls.length;ci++){
+        var rect=cardEls[ci].getBoundingClientRect();
+        if(e.clientY<rect.top+rect.height/2){dropTarget=cardEls[ci].dataset.id;break;}
+      }
+      if(srcWid!==twid){
+        // Cross-column move
         cardWeekAssign[did]=twid;
         var fc=findCard(did),wk=getAllWeeks().filter(function(w){return w.id===twid;})[0];
         logActivity('\u21C6 '+(fc?fc.artist:did)+' moved to '+(wk?wk.label:twid));
-        pushHistory();renderBoard();persistState();
       }
+      // Build new order for target column
+      var curCards=getCardsForWeek(twid).filter(function(c){return!deletedCards[c.id];});
+      var ordered=sortedCards(twid,curCards).map(function(c){return c.id;});
+      // Remove dragged card from ordered if present
+      ordered=ordered.filter(function(id){return id!==did;});
+      // Insert at drop position
+      if(dropTarget){
+        var idx=ordered.indexOf(dropTarget);
+        if(idx>=0)ordered.splice(idx,0,did);
+        else ordered.push(did);
+      } else {
+        ordered.push(did);
+      }
+      cardOrder[twid]=ordered;
+      pushHistory();renderBoard();persistState();
     });
 
     visible.forEach(function(c){
@@ -954,7 +1048,7 @@ function renderBoard(){
       var card=document.createElement('div');
       card.className='card '+et;card.draggable=true;card.dataset.id=c.id;
       card.innerHTML=badge+
-        '<div class="card-top"><div class="card-artist">'+c.artist+'</div><div class="card-tag '+et+'">'+tagLabel(et)+'</div></div>'+
+        '<div class="card-top"><div class="card-artist">'+c.artist+'</div>'+(et==='done'?'':'<div class="card-tag '+et+'">'+tagLabel(et)+'</div>')+'</div>'+
         '<div class="card-detail-wrap"><span class="card-detail">'+(detailLabels[c.id]||c.detail)+'</span>'+
           '<div class="card-actions"><button class="edit-detail-btn" title="Edit">&#x270F;</button><button class="delete-card-btn" title="Delete">&#x2715;</button></div>'+
         '</div>'+
@@ -1038,8 +1132,11 @@ function openModal(c,focusRename,deleteMode){
   document.getElementById('m-notes-input').value=cardNotes[c.id]||'';
   var wk=getAllWeeks().filter(function(w){return getCardsForWeek(w.id).some(function(x){return x.id===c.id;});})[0];
   document.getElementById('m-week').textContent=wk?wk.label:'\u2014';
-  document.getElementById('m-day').textContent=c.day;
-  document.getElementById('m-shoot').textContent=c.shoot;
+  document.getElementById('m-day-input').value=c.day;
+  // Wire date picker to these inputs (re-attach each open to reset fmt)
+  document.getElementById('m-day-input').onclick=function(e){e.stopPropagation();openDatePicker(this,'upload');};
+  document.getElementById('m-shoot-input').onclick=function(e){e.stopPropagation();openDatePicker(this,'shoot');};
+  document.getElementById('m-shoot-input').value=c.shoot;
   document.getElementById('m-status').textContent=up?'Uploaded to YouTube':(ds==='overdue'?'\u26A0 Overdue':'Pending upload');
   document.getElementById('m-toggle-btn').textContent=up?'Mark as pending':'Mark as uploaded';
   document.getElementById('m-toggle-btn').style.background=up?'var(--surface2)':'var(--accent)';
@@ -1049,7 +1146,7 @@ function openModal(c,focusRename,deleteMode){
   document.getElementById('modal-overlay').classList.add('open');
   if(focusRename)setTimeout(function(){var i=document.getElementById('m-detail-input');i.focus();i.select();},80);
 }
-function closeModal(){document.getElementById('modal-overlay').classList.remove('open');activeCard=null;}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');activeCard=null;closeDatePicker();}
 
 // ============================================================
 // MODAL EVENTS
@@ -1059,6 +1156,8 @@ document.getElementById('m-save-btn').addEventListener('click',function(){
   var val=document.getElementById('m-detail-input').value.trim();
   var ytv=document.getElementById('m-yt-input').value.trim();
   var ntv=document.getElementById('m-notes-input').value.trim();
+  var dayv=document.getElementById('m-day-input').value.trim();
+  var shv=document.getElementById('m-shoot-input').value.trim();
   var ch=false;
   if(val&&val!==detailLabels[activeCard.id]){ch=true;detailLabels[activeCard.id]=val;}
   if(ytv!==(youtubeLinks[activeCard.id]||'')){
@@ -1069,6 +1168,16 @@ document.getElementById('m-save-btn').addEventListener('click',function(){
   if(ntv!==(cardNotes[activeCard.id]||'')){
     ch=true;cardNotes[activeCard.id]=ntv;
     logActivity('\uD83D\uDCDD '+activeCard.artist+' notes updated');
+  }
+  if(dayv&&dayv!==activeCard.day){
+    ch=true;
+    dayOverrides[activeCard.id]=dayv;activeCard.day=dayv;
+    logActivity('\uD83D\uDCC5 '+activeCard.artist+' upload day \u2192 '+dayv);
+  }
+  if(shv&&shv!==activeCard.shoot){
+    ch=true;
+    shootOverrides[activeCard.id]=shv;activeCard.shoot=shv;
+    logActivity('\uD83C\uDFA5 '+activeCard.artist+' shoot date \u2192 '+shv);
   }
   if(ch)pushHistory();
   closeModal();renderBoard();if(ch)persistState();
@@ -1329,6 +1438,138 @@ document.getElementById('cal-today-btn').addEventListener('click',function(){
 });
 
 // ============================================================
+// MINI DATE PICKER
+// ============================================================
+var _dp={open:false,inputEl:null,fmt:'upload',year:0,month:0};
+var _DPMON=['January','February','March','April','May','June','July','August','September','October','November','December'];
+var _DPDOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+var _DPMONS={Jan:0,Feb:1,Mar:2,Apr:3,May:4,Jun:5,Jul:6,Aug:7,Sep:8,Oct:9,Nov:10,Dec:11};
+
+function dpParseCurrent(val){
+  // Try to get year/month from the current field value e.g. "Tue Mar 25" or "Mar 21"
+  if(!val||val==='TBD')return null;
+  var m=val.match(/([A-Za-z]+)\s+(\d+)/);
+  if(!m)return null;
+  // Could be "Tue Mar 25" (second token is month) or "Mar 25" (first token is month)
+  var tok1=m[1].substring(0,3),tok2=m[2];
+  if(_DPMONS[tok1]!==undefined)return{year:2026,month:_DPMONS[tok1],day:parseInt(tok2)};
+  // Try "Dow Mon D" pattern
+  var m2=val.match(/[A-Za-z]+\s+([A-Za-z]+)\s+(\d+)/);
+  if(m2&&_DPMONS[m2[1].substring(0,3)]!==undefined)return{year:2026,month:_DPMONS[m2[1].substring(0,3)],day:parseInt(m2[2])};
+  return null;
+}
+
+function dpFormat(year,month,day,fmt){
+  var monthStr=Object.keys(_DPMONS)[month]||_DPMON[month].substring(0,3);
+  // Ensure 3-letter month
+  monthStr=_DPMON[month].substring(0,3);
+  if(fmt==='upload'){
+    var dow=new Date(year,month,day).getDay();
+    return _DPDOW[dow]+' '+monthStr+' '+day;
+  } else {
+    return monthStr+' '+day;
+  }
+}
+
+function dpRender(){
+  var el=document.getElementById('date-picker');
+  if(!el||!_dp.open)return;
+  var lbl=document.getElementById('dp-month-label');
+  lbl.textContent=_DPMON[_dp.month]+' '+_dp.year;
+
+  var grid=document.getElementById('dp-days');
+  grid.innerHTML='';
+
+  var first=new Date(_dp.year,_dp.month,1);
+  var startDow=first.getDay();
+  var daysInMonth=new Date(_dp.year,_dp.month+1,0).getDate();
+  var daysInPrev=new Date(_dp.year,_dp.month,0).getDate();
+  var today=new Date();
+  var totalCells=Math.ceil((startDow+daysInMonth)/7)*7;
+
+  // Parse currently selected day
+  var selParsed=_dp.inputEl?dpParseCurrent(_dp.inputEl.value):null;
+
+  for(var i=0;i<totalCells;i++){
+    var cell=document.createElement('div');
+    var dayNum,isOther=false;
+    if(i<startDow){dayNum=daysInPrev-startDow+i+1;isOther=true;}
+    else if(i>=startDow+daysInMonth){dayNum=i-startDow-daysInMonth+1;isOther=true;}
+    else{dayNum=i-startDow+1;}
+
+    var isToday=(!isOther&&dayNum===today.getDate()&&_dp.month===today.getMonth()&&_dp.year===today.getFullYear());
+    var isSel=(!isOther&&selParsed&&selParsed.year===_dp.year&&selParsed.month===_dp.month&&selParsed.day===dayNum);
+
+    cell.className='dp-day'+(isOther?' dp-other-month':'')+(isToday?' dp-today':'')+(isSel?' dp-selected':'');
+    cell.textContent=dayNum;
+
+    if(!isOther){
+      (function(y,mo,d){
+        cell.addEventListener('click',function(){
+          var formatted=dpFormat(y,mo,d,_dp.fmt);
+          if(_dp.inputEl){_dp.inputEl.value=formatted;_dp.inputEl.dispatchEvent(new Event('change'));}
+          closeDatePicker();
+        });
+      })(_dp.year,_dp.month,dayNum);
+    }
+    grid.appendChild(cell);
+  }
+}
+
+function openDatePicker(inputEl,fmt){
+  _dp.inputEl=inputEl;_dp.fmt=fmt||'upload';
+  // Determine starting month from current value or default to Mar 2026
+  var parsed=dpParseCurrent(inputEl.value);
+  if(parsed){_dp.year=parsed.year;_dp.month=parsed.month;}
+  else{_dp.year=2026;_dp.month=2;} // default: March 2026
+  _dp.open=true;
+
+  var picker=document.getElementById('date-picker');
+  picker.classList.add('open');
+
+  // Position below the input
+  var rect=inputEl.getBoundingClientRect();
+  var pw=234;
+  var left=Math.min(rect.left,window.innerWidth-pw-12);
+  var top=rect.bottom+6;
+  if(top+300>window.innerHeight)top=rect.top-310;
+  picker.style.left=left+'px';
+  picker.style.top=top+'px';
+
+  dpRender();
+}
+
+function closeDatePicker(){
+  _dp.open=false;_dp.inputEl=null;
+  var picker=document.getElementById('date-picker');
+  if(picker)picker.classList.remove('open');
+}
+
+document.getElementById('dp-prev').addEventListener('click',function(e){
+  e.stopPropagation();
+  _dp.month--;if(_dp.month<0){_dp.month=11;_dp.year--;}dpRender();
+});
+document.getElementById('dp-next').addEventListener('click',function(e){
+  e.stopPropagation();
+  _dp.month++;if(_dp.month>11){_dp.month=0;_dp.year++;}dpRender();
+});
+document.getElementById('dp-clear').addEventListener('click',function(e){
+  e.stopPropagation();
+  if(_dp.inputEl)_dp.inputEl.value='TBD';
+  closeDatePicker();
+});
+// Close on outside click
+document.addEventListener('mousedown',function(e){
+  if(!_dp.open)return;
+  var picker=document.getElementById('date-picker');
+  if(picker&&!picker.contains(e.target)&&e.target!==_dp.inputEl)closeDatePicker();
+});
+// ESC closes picker
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'&&_dp.open)closeDatePicker();
+});
+
+// ============================================================
 // SEASON SWITCH
 // ============================================================
 function switchSeason(n){
@@ -1336,16 +1577,16 @@ function switchSeason(n){
   persistState();
   currentSeason=n;
   // Reset all mutable state
-  uploadedStatus={};detailLabels={};deletedCards={};dayOverrides={};
+  uploadedStatus={};detailLabels={};deletedCards={};dayOverrides={};shootOverrides={};
   youtubeLinks={};cardNotes={};cardWeekAssign={};
-  customWeeks=[];customCards=[];sortOrders={};activityLog=[];
+  customWeeks=[];customCards=[];sortOrders={};activityLog=[];cardOrder={};
   activeFilter='all';searchQuery='';
   var si=document.getElementById('search-input');if(si)si.value='';
   document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.toggle('active',b.dataset.filter==='all');});
   // Seed detailLabels from new season base cards
   getActiveBaseWeeks().forEach(function(w){w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});});
   // Pre-seed S1 uploaded cards
-  if(n===1){['d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});}
+  if(n===1){['u1','u2','u3','u4','u5','u6','d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});}
   // Load saved state
   var stKey=n===1?LSK:LSK_S2;
   var delKey=n===1?LSDK:LSDK_S2;
@@ -1372,6 +1613,7 @@ function initBoard(sv){
     if(sv.status)Object.assign(uploadedStatus,sv.status);
     if(sv.details)Object.assign(detailLabels,sv.details);
     if(sv.days){Object.assign(dayOverrides,sv.days);getAllCards().forEach(function(c){if(sv.days[c.id])c.day=sv.days[c.id];});}
+    if(sv.shoots){Object.assign(shootOverrides,sv.shoots);getAllCards().forEach(function(c){if(sv.shoots[c.id])c.shoot=sv.shoots[c.id];});}
     if(sv.youtube)Object.assign(youtubeLinks,sv.youtube);
     if(sv.notes)Object.assign(cardNotes,sv.notes);
     if(sv.weekAssign)Object.assign(cardWeekAssign,sv.weekAssign);
@@ -1381,6 +1623,7 @@ function initBoard(sv){
       customCards.forEach(function(c){if(!detailLabels[c.id])detailLabels[c.id]=c.detail;});
     }
     if(sv.sortOrders)Object.assign(sortOrders,sv.sortOrders);
+    if(sv.cardOrder)Object.assign(cardOrder,sv.cardOrder);
     if(sv.activity)activityLog=sv.activity;
   }
   renderBoard();
