@@ -67,8 +67,9 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .prog-bar{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1);}
 .prog-nums{font-size:11px;color:var(--muted);}
 .prog-nums b{color:var(--text);font-weight:500;}
-.board{display:flex;gap:0;padding:20px 32px 40px;overflow-x:auto;-webkit-overflow-scrolling:touch;min-height:calc(100vh - 200px);align-items:flex-start;}
-.column{flex:0 0 auto;width:274px;margin-right:14px;}
+.board{display:flex;flex-direction:column;gap:16px;padding:20px 32px 40px;min-height:calc(100vh - 200px);}
+.column{width:100%;max-width:720px;margin:0 auto;}
+.col-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px;}
 .col-header{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:linear-gradient(180deg,var(--surface2) 0%,var(--surface) 100%);border:1px solid var(--border);border-radius:10px 10px 0 0;border-bottom:2px solid var(--accent);margin-bottom:2px;box-shadow:0 2px 8px rgba(0,0,0,0.3);}
 .col-title-wrap{flex:1;min-width:0;}
 .col-title{font-family:var(--font-display);font-size:16px;letter-spacing:0.08em;color:var(--accent);text-shadow:0 0 18px rgba(232,255,71,0.25);}
@@ -78,9 +79,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .sort-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:13px;padding:2px 5px;border-radius:4px;transition:color 0.15s;}
 .sort-btn:hover{color:var(--accent);}
 .sort-btn.active-sort{color:var(--accent);}
-.col-cards{display:flex;flex-direction:column;gap:6px;}
 .col-cards.drag-over{border-radius:8px;background:rgba(232,255,71,0.02);min-height:60px;}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:border-color 0.2s,transform 0.25s cubic-bezier(0.2,0,0,1),background 0.2s,box-shadow 0.2s,margin 0.25s cubic-bezier(0.2,0,0,1);}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:grab;position:relative;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.3);transition:border-color 0.2s,transform 0.25s cubic-bezier(0.2,0,0,1),background 0.2s,box-shadow 0.2s,margin 0.25s cubic-bezier(0.2,0,0,1);}
 .card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:8px 0 0 8px;}
 .card.perf::before{background:var(--perf);}
 .card.int::before{background:var(--int);}
@@ -121,6 +121,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .badge-yt:hover{opacity:1;}
 .badge-note{font-size:10px;color:var(--muted);line-height:1;}
 .done-badge{position:absolute;top:8px;right:8px;font-size:9px;background:rgba(34,197,94,0.1);color:#22c55e;border-radius:4px;padding:2px 6px;letter-spacing:0.06em;font-weight:500;text-transform:uppercase;}
+.edited-badge{position:absolute;top:8px;right:8px;font-size:9px;background:rgba(168,85,247,0.12);color:#a855f7;border-radius:4px;padding:2px 6px;letter-spacing:0.06em;font-weight:500;text-transform:uppercase;}
+.card.edited::before{background:#a855f7;}
 .overdue-badge{position:absolute;bottom:7px;right:8px;font-size:9px;background:rgba(239,68,68,0.12);color:var(--overdue);border-radius:4px;padding:2px 6px;letter-spacing:0.06em;font-weight:500;text-transform:uppercase;}
 .soon-badge{position:absolute;bottom:7px;right:8px;font-size:9px;background:rgba(245,158,11,0.12);color:var(--soon);border-radius:4px;padding:2px 6px;letter-spacing:0.06em;font-weight:500;text-transform:uppercase;}
 .add-card-btn{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:6px;padding:8px;border:1px dashed #2e2e2e;border-radius:8px;background:transparent;color:var(--muted);font-family:var(--font-body);font-size:11px;cursor:pointer;width:100%;transition:all 0.15s;letter-spacing:0.04em;}
@@ -326,7 +328,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   .progress-section{padding:12px 16px 0;gap:10px;}
   .prog-card{min-width:140px;padding:10px 12px;}
   .board{padding:14px 12px 40px;}
-  .column{width:240px;margin-right:10px;}
+  .column{width:100%;max-width:100%;}
+  .col-cards{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));}
   #scoreboard{right:14px;bottom:16px;}
   .score-label{font-size:9px;width:52px;}
   .score-bar-wrap{width:72px;}
@@ -346,7 +349,8 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   .search-wrap{flex-shrink:0;}
   .search-input{width:100px;font-size:11px;}
   .board{padding:10px 8px 40px;}
-  .column{width:220px;margin-right:8px;}
+  .column{width:100%;max-width:100%;}
+  .col-cards{grid-template-columns:1fr;}
   .col-title{font-size:14px;}
   .card{padding:8px 10px;}
   .card-artist{font-size:12px;}
@@ -363,7 +367,7 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   .board-watermark{width:120px;height:120px;right:8px;bottom:10px;opacity:0.08;}
   #save-indicator{bottom:10px;right:10px;font-size:10px;padding:6px 10px;}
 }
-@media (max-width: 360px){.column{width:190px;}.filter-btn{font-size:10px;padding:3px 7px;}.view-btn{font-size:9px;}}
+@media (max-width: 360px){.filter-btn{font-size:10px;padding:3px 7px;}.view-btn{font-size:9px;}}
 </style>
 </head>
 <body>
@@ -423,6 +427,7 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   <button class="filter-btn" data-filter="perf">Performance</button>
   <button class="filter-btn" data-filter="int">Interview</button>
   <button class="filter-btn" data-filter="shoot">Upcoming</button>
+  <button class="filter-btn" data-filter="edited" style="color:#a855f7;border-color:rgba(168,85,247,0.35);">Done Editing</button>
   <button class="filter-btn" data-filter="done">Uploaded</button>
   <button class="filter-btn" data-filter="overdue" style="color:#ef4444;border-color:rgba(239,68,68,0.35);">⚠ Overdue</button>
   <div class="search-wrap">
@@ -569,7 +574,8 @@ var WEEKS=[
     {id:'v2_09',artist:'Yun',detail:'Song 3',type:'perf',day:'Sun Apr 6',shoot:'TBD'},
     {id:'v2_10',artist:'Yun',detail:'TK Tambayan (interview)',type:'int',day:'Sun Apr 6',shoot:'TBD'}
   ]},
-  {id:'w3',label:'Week 3',date:'Apr 8 \u2013 12',cards:[
+  {id:'w3',label:'Week 3',date:'Apr 7 \u2013 11',cards:[
+    {id:'v3_00',artist:'Side A',detail:'Kahit Man Lang Sandali (Season Ender)',type:'perf',day:'Mon Apr 7',shoot:'Feb 25'},
     {id:'v3_01',artist:'TK Promo',detail:'Promo Vid #1',type:'perf',day:'Tue Apr 8',shoot:'TBD'},
     {id:'v3_02',artist:'TK Promo',detail:'Promo Vid #2',type:'perf',day:'Tue Apr 8',shoot:'TBD'},
     {id:'v3_03',artist:'TK Promo',detail:'Promo Vid #3',type:'perf',day:'Wed Apr 9',shoot:'TBD'},
@@ -609,7 +615,7 @@ var WEEKS_S2=[
 ];
 
 // ========================= STATE =========================
-var uploadedStatus={},detailLabels={},deletedCards={},dayOverrides={},shootOverrides={};
+var uploadedStatus={},editedStatus={},detailLabels={},deletedCards={},dayOverrides={},shootOverrides={};
 var youtubeLinks={},cardNotes={},cardWeekAssign={};
 var customWeeks=[],customCards=[],sortOrders={},activityLog=[],cardOrder={};
 var activeFilter='all',searchQuery='',activeCard=null,saveTimer=null;
@@ -627,6 +633,7 @@ var dragSrcId=null;
 function _snap(){
   return {
     up:JSON.stringify(uploadedStatus),
+    ed:JSON.stringify(editedStatus),
     dl:JSON.stringify(detailLabels),
     dc:JSON.stringify(deletedCards),
     dy:JSON.stringify(dayOverrides),
@@ -643,6 +650,7 @@ function _snap(){
 }
 function _apply(s){
   uploadedStatus=JSON.parse(s.up);
+  editedStatus=JSON.parse(s.ed||'{}');
   detailLabels=JSON.parse(s.dl);
   deletedCards=JSON.parse(s.dc);
   dayOverrides=JSON.parse(s.dy);
@@ -774,13 +782,34 @@ function getCardStatus(c){
   return 'ok';
 }
 
+// ========================= AUTO-DATE SLOTS =========================
+// Each scheduled week has upload slots: position in the column = upload date
+// Hardcoded to match the exact intended schedule
+var WEEK_SLOTS={
+  'w1':['Tue Mar 25','Tue Mar 25','Wed Mar 26','Wed Mar 26','Thu Mar 27','Thu Mar 27','Fri Mar 28','Fri Mar 28','Sun Mar 30','Sun Mar 30'],
+  'w2':['Tue Apr 1','Tue Apr 1','Wed Apr 2','Wed Apr 2','Thu Apr 3','Thu Apr 3','Fri Apr 4','Fri Apr 4','Sun Apr 6','Sun Apr 6'],
+  'w3':['Mon Apr 7','Tue Apr 8','Tue Apr 8','Wed Apr 9','Wed Apr 9','Thu Apr 10','Thu Apr 10','Fri Apr 11','Fri Apr 11'],
+  's2_w1':['Sun Apr 20','Sun Apr 20','Tue Apr 22','Tue Apr 22','Wed Apr 23','Wed Apr 23','Thu Apr 24','Thu Apr 24','Fri Apr 25','Fri Apr 25','Sun Apr 27']
+};
+function getWeekSlots(wid){return WEEK_SLOTS[wid]||null;}
+// Assign dates from slots to cards based on their sorted position
+function autoAssignDates(wid,sortedAllCards){
+  var slots=getWeekSlots(wid);
+  if(!slots)return;
+  sortedAllCards.forEach(function(c,i){
+    var newDay=i<slots.length?slots[i]:'TBD';
+    dayOverrides[c.id]=newDay;
+    c.day=newDay;
+  });
+}
+
 // ========================= PERSISTENCE =========================
 function persistState(){
   var stKey=currentSeason===1?LSK:LSK_S2;
   var delKey=currentSeason===1?LSDK:LSDK_S2;
   try{
     var sv={
-      up:uploadedStatus,dl:detailLabels,dy:dayOverrides,sh:shootOverrides,
+      up:uploadedStatus,ed:editedStatus,dl:detailLabels,dy:dayOverrides,sh:shootOverrides,
       yl:youtubeLinks,cn:cardNotes,cw:cardWeekAssign,
       cwo:customWeeks,cc:customCards,so:sortOrders,al:activityLog,co:cardOrder
     };
@@ -802,6 +831,7 @@ function showSave(st){
 function initBoard(sv){
   if(!sv)return;
   if(sv.up)Object.assign(uploadedStatus,sv.up);
+  if(sv.ed)Object.assign(editedStatus,sv.ed);
   if(sv.dl)Object.assign(detailLabels,sv.dl);
   if(sv.dy)Object.assign(dayOverrides,sv.dy);
   if(sv.sh)Object.assign(shootOverrides,sv.sh);
@@ -831,7 +861,7 @@ function switchSeason(n){
   if(n===currentSeason)return;
   persistState();
   currentSeason=n;
-  uploadedStatus={};detailLabels={};deletedCards={};dayOverrides={};shootOverrides={};
+  uploadedStatus={};editedStatus={};detailLabels={};deletedCards={};dayOverrides={};shootOverrides={};
   youtubeLinks={};cardNotes={};cardWeekAssign={};
   customWeeks=[];customCards=[];sortOrders={};activityLog=[];cardOrder={};
   _milestoneShown={};
@@ -974,7 +1004,7 @@ function triggerMilestone(pct,done,total){
 function applyFilterSearch(cards){
   return cards.filter(function(c){
     if(deletedCards[c.id])return false;
-    var et=uploadedStatus[c.id]?'done':c.type;
+    var et=uploadedStatus[c.id]?'done':editedStatus[c.id]?'edited':c.type;
     if(activeFilter!=='all'&&activeFilter!=='overdue'&&et!==activeFilter)return false;
     if(activeFilter==='overdue'){
       var st=getCardStatus(c);
@@ -995,9 +1025,17 @@ function renderBoard(){
   if(!board)return;
   board.innerHTML='';
   var weeks=getAllWeeks();
+  // Move "Already Uploaded" column to the bottom for vertical layout
+  var uploadedWid=currentSeason===1?'w0':'s2_w0';
+  var uploadedIdx=-1;
+  for(var wi=0;wi<weeks.length;wi++){if(weeks[wi].id===uploadedWid){uploadedIdx=wi;break;}}
+  if(uploadedIdx>=0){var uw=weeks.splice(uploadedIdx,1)[0];weeks.push(uw);}
   weeks.forEach(function(wk){
-    var cards=getCardsForWeek(wk.id);
-    var visible=applyFilterSearch(cards);
+    var allCards=getCardsForWeek(wk.id).filter(function(c){return !deletedCards[c.id];});
+    var sorted=sortedCards(wk.id,allCards);
+    // Auto-assign dates from week slots (position = priority = date)
+    autoAssignDates(wk.id,sorted);
+    var visible=applyFilterSearch(sorted);
     var col=document.createElement('div');
     col.className='column';
 
@@ -1007,8 +1045,6 @@ function renderBoard(){
     hdr.innerHTML='<div class="col-title-wrap"><div class="col-title">'+wk.label+'</div>'+(wk.date?'<div class="col-date">'+wk.date+'</div>':'')+'</div>'+
       '<div class="col-right">'+
       '<div class="col-count">'+visible.length+'</div>'+
-      '<button class="sort-btn'+(so==='artist'?' active-sort':'')+'" data-week="'+wk.id+'" data-sort="artist" title="Sort by artist">\u2606</button>'+
-      '<button class="sort-btn'+(so==='day'?' active-sort':'')+'" data-week="'+wk.id+'" data-sort="day" title="Sort by date">\u{1F4C5}</button>'+
       '<button class="sort-btn" data-week="'+wk.id+'" data-sort="add" title="Add card">\uFF0B</button>'+
       '</div>';
     col.appendChild(hdr);
@@ -1018,7 +1054,7 @@ function renderBoard(){
     cardsEl.dataset.week=wk.id;
     setupDropZone(cardsEl);
 
-    sortedCards(wk.id,visible).forEach(function(c){
+    visible.forEach(function(c){
       var cardEl=buildCardEl(c,wk.id);
       cardsEl.appendChild(cardEl);
     });
@@ -1053,13 +1089,15 @@ function buildCardEl(c,wid){
   var st=getCardStatus(c);
   var cd=getCountdown(c);
 
+  var ed=editedStatus[c.id];
   var card=document.createElement('div');
-  card.className='card '+(up?'done':c.type);
+  card.className='card '+(up?'done':ed?'edited':c.type);
   card.dataset.id=c.id;
   card.draggable=true;
 
   var badge='';
   if(up)badge='<div class="done-badge">\u2713 Uploaded</div>';
+  else if(ed)badge='<div class="edited-badge">\u2713 Done Editing</div>';
   else if(st==='overdue')badge='<div class="overdue-badge">\u26a0 Overdue</div>';
   else if(st==='soon')badge='<div class="soon-badge">\u23f0 This week</div>';
 
@@ -1073,7 +1111,7 @@ function buildCardEl(c,wid){
   card.innerHTML=badge+
     '<div class="card-top">'+
     '<div class="card-artist">'+escHtml(c.artist)+'</div>'+
-    (et==='done'?'':'<div class="card-tag '+et+'">'+tagLabel(et)+'</div>')+
+    (et==='done'||ed?'':'<div class="card-tag '+et+'">'+tagLabel(et)+'</div>')+
     '</div>'+
     '<div class="card-detail-wrap"><span class="card-detail">'+escHtml(detailLabels[c.id]||c.detail)+'</span></div>'+
     '<div class="card-meta">'+
@@ -1084,9 +1122,9 @@ function buildCardEl(c,wid){
   card.addEventListener('click',function(){openCard(c.id);});
   card.addEventListener('dragstart',function(e){
     dragSrcId=c.id;
-    card.classList.add('dragging');
     e.dataTransfer.setData('text/plain',c.id);
     e.dataTransfer.effectAllowed='move';
+    setTimeout(function(){card.classList.add('dragging');},0);
   });
   card.addEventListener('dragend',function(){
     card.classList.remove('dragging');
@@ -1146,6 +1184,7 @@ function setupDropZone(cardsEl){
       cardWeekAssign[did]=twid;
       var fc=findCard(did);
       var wk=getAllWeeks().filter(function(w){return w.id===twid;})[0];
+      // Date auto-assigns from slot position via renderBoard → autoAssignDates
       logActivity('\u21c6 '+(fc?fc.artist:did)+' moved to '+(wk?wk.label:twid));
     }
     var curCards=getCardsForWeek(twid).filter(function(c){return !deletedCards[c.id];});
@@ -1542,15 +1581,18 @@ function openCard(id){
     shi.onclick=function(){openDatePicker(shi,'shoot');};
   }
   if(wkEl)wkEl.textContent=wk?wk.label:'';
+  var ed=editedStatus[id];
   if(stEl){
     if(up)stEl.innerHTML='<span style="color:var(--int)">\u2713 Uploaded</span>';
+    else if(ed)stEl.innerHTML='<span style="color:#a855f7">\u2713 Done Editing</span>';
     else if(st==='overdue')stEl.innerHTML='<span style="color:var(--overdue)">\u26a0 Overdue</span>';
     else if(st==='soon')stEl.innerHTML='<span style="color:var(--soon)">\u23f0 This week</span>';
     else stEl.textContent='Scheduled';
   }
   if(tb){
-    tb.textContent=up?'Mark as not uploaded':'Mark as uploaded';
-    tb.className=up?'btn btn-secondary':'btn btn-primary';
+    if(up){tb.textContent='Revert to done editing';tb.className='btn btn-secondary';}
+    else if(ed){tb.textContent='Mark as uploaded';tb.className='btn btn-primary';}
+    else{tb.textContent='Mark as done editing';tb.className='btn btn-primary';tb.style.background='#a855f7';tb.style.borderColor='#a855f7';}
   }
   if(dc)dc.style.display='none';
 
@@ -1673,9 +1715,24 @@ document.addEventListener('DOMContentLoaded',function(){
 
   document.getElementById('m-toggle-btn').addEventListener('click',function(){
     if(!activeCard)return;
-    uploadedStatus[activeCard]=!uploadedStatus[activeCard];
     var c=findCard(activeCard);
-    if(c)logActivity((uploadedStatus[activeCard]?'\u2713 Uploaded: ':'\u21ba Reverted: ')+(c.artist+' \u2013 '+(detailLabels[activeCard]||c.detail)));
+    var name=c?(c.artist+' \u2013 '+(detailLabels[activeCard]||c.detail)):'';
+    var up=uploadedStatus[activeCard];
+    var ed=editedStatus[activeCard];
+    if(up){
+      // Uploaded → revert to Done Editing
+      uploadedStatus[activeCard]=false;
+      editedStatus[activeCard]=true;
+      logActivity('\u21ba Reverted to editing: '+name);
+    } else if(ed){
+      // Done Editing → Uploaded
+      uploadedStatus[activeCard]=true;
+      logActivity('\u2713 Uploaded: '+name);
+    } else {
+      // Scheduled → Done Editing
+      editedStatus[activeCard]=true;
+      logActivity('\u2713 Done editing: '+name);
+    }
     pushHistory();closeModal();renderBoard();updateStats();persistState();
   });
 
