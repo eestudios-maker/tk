@@ -94,7 +94,17 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
 .card.done{opacity:0.5;}
 .card.done:hover{opacity:0.75;}
 .card.dragging{opacity:0.2;transform:scale(0.96);pointer-events:none;}
+.card{cursor:grab;}
+.card.dragging{cursor:grabbing;}
+body.touch-dragging{user-select:none;-webkit-user-select:none;}
+body.touch-dragging .card{transition:none !important;}
 .drop-placeholder{height:4px;border-radius:4px;background:var(--accent);margin:3px 0;transition:all 0.2s ease;box-shadow:0 0 10px rgba(232,255,71,0.35);pointer-events:none;}
+.column-archived .col-header{background:linear-gradient(180deg,#1a1a1a 0%,#141414 100%);border-bottom:2px solid #3a3a3a;}
+.column-archived .col-title{color:var(--muted);text-shadow:none;}
+.column-archived .col-date{opacity:0.5;}
+.column-archived .card{opacity:0.55;}
+.column-archived .card:hover{opacity:0.8;}
+.column-archived-label{display:inline-flex;align-items:center;gap:5px;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#555;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:4px;padding:2px 7px;margin-top:3px;}
 .card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
 .card-artist{font-weight:500;font-size:13px;color:var(--text);}
 .card-tag{font-size:10px;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;border-radius:4px;padding:2px 7px;}
@@ -441,7 +451,7 @@ header{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px 
   <button class="filter-btn" data-filter="overdue" style="color:#ef4444;border-color:rgba(239,68,68,0.35);">⚠ Overdue</button>
   <div class="search-wrap">
     <span class="search-icon">&#128269;</span>
-    <input class="search-input" id="search-input" type="text" placeholder="Search artist…"/>
+    <input class="search-input" id="search-input" type="text" placeholder="Search artist or title…"/>
   </div>
 </div>
 
@@ -627,7 +637,7 @@ var WEEKS_S2=[
 var uploadedStatus={},editedStatus={},detailLabels={},deletedCards={},dayOverrides={},shootOverrides={};
 var youtubeLinks={},cardNotes={},cardWeekAssign={};
 var customWeeks=[],customCards=[],sortOrders={},activityLog=[],cardOrder={};
-var activeFilter='all',searchQuery='',activeCard=null,saveTimer=null;
+var activeFilter='all',searchQuery='',activeCard=null,saveTimer=null,_persistTimer=null,_searchTimer=null;
 var currentSeason=1;
 var LSK='tunog_kalye_state',LSDK='tunog_kalye_deleted';
 var LSK_S2='tunog_kalye_state_s2',LSDK_S2='tunog_kalye_deleted_s2';
@@ -637,6 +647,7 @@ var dpInputEl=null,dpFmt='upload',dpYear=2026,dpMonth=2;
 var currentView='board';
 var calYear=2026,calMonth=3;
 var dragSrcId=null;
+var touchDragId=null,touchClone=null,touchSrcWid=null,_touchTimer=null;
 
 // ========================= UNDO/REDO =========================
 function _snap(){
@@ -820,13 +831,18 @@ function persistState(){
     var sv={
       up:uploadedStatus,ed:editedStatus,dl:detailLabels,dy:dayOverrides,sh:shootOverrides,
       yl:youtubeLinks,cn:cardNotes,cw:cardWeekAssign,
-      cwo:customWeeks,cc:customCards,so:sortOrders,al:activityLog,co:cardOrder
+      cwo:customWeeks,cc:customCards,so:sortOrders,al:activityLog,co:cardOrder,af:activeFilter
     };
     localStorage.setItem(stKey,JSON.stringify(sv));
     var dids=Object.keys(deletedCards).filter(function(k){return deletedCards[k];});
     localStorage.setItem(delKey,JSON.stringify(dids));
     showSave('saved');
   } catch(e){showSave('error');}
+}
+function debouncePersist(){
+  clearTimeout(_persistTimer);
+  showSave('saving');
+  _persistTimer=setTimeout(persistState,600);
 }
 function showSave(st){
   var el=document.getElementById('save-indicator');
@@ -852,6 +868,10 @@ function initBoard(sv){
   if(sv.so)Object.assign(sortOrders,sv.so);
   if(sv.al&&sv.al.length)activityLog=sv.al;
   if(sv.co)Object.assign(cardOrder,sv.co);
+  if(sv.af){
+    activeFilter=sv.af;
+    document.querySelectorAll('.filter-btn').forEach(function(b){b.classList.toggle('active',b.dataset.filter===activeFilter);});
+  }
   // apply overrides to card objects
   getAllCards().forEach(function(c){
     if(dayOverrides[c.id])c.day=dayOverrides[c.id];
@@ -918,7 +938,9 @@ function updateStats(){
   setBar('bar-backlog','pn-backlog','pd-backlog',bDone,bCards.length,bCards.length?Math.round(bDone/bCards.length*100):0);
 
   // pipeline
-  var pipeWids=currentSeason===1?['w1','w2','w3']:['s2_w1'];
+  var _archivedWid=currentSeason===1?'w0':'s2_w0';
+  var _upcomingWid=currentSeason===1?'wup':'s2_wup';
+  var pipeWids=getAllWeeks().filter(function(w){return w.id!==_archivedWid&&w.id!==_upcomingWid;}).map(function(w){return w.id;});
   var pCards=[];
   pipeWids.forEach(function(wid){
     getCardsForWeek(wid).forEach(function(c){if(!deletedCards[c.id])pCards.push(c);});
@@ -1046,12 +1068,14 @@ function renderBoard(){
     autoAssignDates(wk.id,sorted);
     var visible=applyFilterSearch(sorted);
     var col=document.createElement('div');
-    col.className='column';
+    var isArchived=(wk.id===uploadedWid);
+    col.className='column'+(isArchived?' column-archived':'');
 
     var hdr=document.createElement('div');
     hdr.className='col-header';
     var so=sortOrders[wk.id]||'default';
-    hdr.innerHTML='<div class="col-title-wrap"><div class="col-title">'+wk.label+'</div>'+(wk.date?'<div class="col-date">'+wk.date+'</div>':'')+'</div>'+
+    var archivedLabel=isArchived?'<div class="column-archived-label">&#x2713; Archive</div>':'';
+    hdr.innerHTML='<div class="col-title-wrap"><div class="col-title">'+wk.label+'</div>'+(wk.date?'<div class="col-date">'+wk.date+'</div>':'')+archivedLabel+'</div>'+
       '<div class="col-right">'+
       '<div class="col-count">'+visible.length+'</div>'+
       '<button class="sort-btn" data-week="'+wk.id+'" data-sort="add" title="Add card">\uFF0B</button>'+
@@ -1133,12 +1157,32 @@ function buildCardEl(c,wid){
     dragSrcId=c.id;
     e.dataTransfer.setData('text/plain',c.id);
     e.dataTransfer.effectAllowed='move';
-    setTimeout(function(){card.classList.add('dragging');},0);
+    setTimeout(function(){card.classList.add('dragging');document.body.classList.add('touch-dragging');},0);
   });
   card.addEventListener('dragend',function(){
     card.classList.remove('dragging');
+    document.body.classList.remove('touch-dragging');
     document.querySelectorAll('.drop-placeholder').forEach(function(p){p.remove();});
   });
+  // Touch drag — long-press (350ms) to initiate
+  (function(cid,weekId){
+    var _tid=null;
+    card.addEventListener('touchstart',function(e){
+      _tid=setTimeout(function(){
+        _touchDragStart(card,cid,weekId);
+        document.addEventListener('touchmove',_touchDragMove,{passive:false});
+        document.addEventListener('touchend',_touchDragEnd,{once:true});
+        document.addEventListener('touchcancel',function(){
+          if(touchClone){touchClone.remove();touchClone=null;}
+          document.querySelectorAll('.card.dragging').forEach(function(c){c.classList.remove('dragging');});
+          document.body.classList.remove('touch-dragging');
+          touchDragId=null;dragSrcId=null;
+        },{once:true});
+      },350);
+    },{passive:true});
+    card.addEventListener('touchend',function(){clearTimeout(_tid);},{passive:true});
+    card.addEventListener('touchmove',function(){clearTimeout(_tid);},{passive:true});
+  })(c.id,wid);
   return card;
 }
 
@@ -1207,10 +1251,78 @@ function setupDropZone(cardsEl){
       ordered.push(did);
     }
     cardOrder[twid]=ordered;
-    pushHistory();renderBoard();persistState();
+    pushHistory();renderBoard();debouncePersist();
   });
 }
 
+// ========================= TOUCH DRAG =========================
+function _touchDragStart(cardEl,cid,wid){
+  touchDragId=cid;touchSrcWid=wid;dragSrcId=cid;
+  var rect=cardEl.getBoundingClientRect();
+  touchClone=cardEl.cloneNode(true);
+  touchClone.style.cssText='position:fixed;z-index:9999;width:'+rect.width+'px;left:'+rect.left+'px;top:'+rect.top+'px;opacity:0.9;pointer-events:none;transition:none;box-shadow:0 10px 40px rgba(0,0,0,0.6);border-radius:8px;';
+  touchClone.classList.add('dragging');
+  document.body.appendChild(touchClone);
+  cardEl.classList.add('dragging');
+  document.body.classList.add('touch-dragging');
+}
+function _touchDragMove(e){
+  if(!touchClone)return;
+  e.preventDefault();
+  var t=e.touches[0];
+  touchClone.style.left=(t.clientX-touchClone.offsetWidth/2)+'px';
+  touchClone.style.top=(t.clientY-50)+'px';
+  touchClone.style.opacity='1';
+  touchClone.style.display='none';
+  var under=document.elementFromPoint(t.clientX,t.clientY);
+  touchClone.style.display='';
+  document.querySelectorAll('.drop-placeholder').forEach(function(p){p.remove();});
+  var cEl=under?under.closest('.col-cards'):null;
+  if(cEl){
+    var ph=document.createElement('div');ph.className='drop-placeholder';
+    var els=cEl.querySelectorAll('.card:not(.dragging)');var ins=false;
+    for(var i=0;i<els.length;i++){
+      var r=els[i].getBoundingClientRect();
+      if(t.clientY<r.top+r.height/2){cEl.insertBefore(ph,els[i]);ins=true;break;}
+    }
+    if(!ins)cEl.appendChild(ph);
+  }
+}
+function _touchDragEnd(e){
+  if(!touchDragId)return;
+  var t=e.changedTouches[0];
+  if(touchClone){touchClone.style.display='none';}
+  var el=document.elementFromPoint(t.clientX,t.clientY);
+  if(touchClone){touchClone.remove();touchClone=null;}
+  document.querySelectorAll('.drop-placeholder').forEach(function(p){p.remove();});
+  document.querySelectorAll('.card.dragging').forEach(function(c){c.classList.remove('dragging');});
+  document.body.classList.remove('touch-dragging');
+  var cEl=el?el.closest('.col-cards'):null;
+  if(!cEl){touchDragId=null;dragSrcId=null;return;}
+  var twid=cEl.dataset.week;
+  var did=touchDragId;
+  var srcWid=touchSrcWid||cardWeekAssign[did]||getOrigWeekId(findCard(did));
+  if(srcWid!==twid){
+    cardWeekAssign[did]=twid;
+    var fc=findCard(did);
+    var wk2=getAllWeeks().filter(function(w){return w.id===twid;})[0];
+    logActivity('\u21c6 '+(fc?fc.artist:did)+' moved to '+(wk2?wk2.label:twid));
+  }
+  var dropTgt=null;
+  var cEls=cEl.querySelectorAll('.card');
+  for(var ci=0;ci<cEls.length;ci++){
+    var rr=cEls[ci].getBoundingClientRect();
+    if(t.clientY<rr.top+rr.height/2){dropTgt=cEls[ci].dataset.id;break;}
+  }
+  var cur=getCardsForWeek(twid).filter(function(c){return !deletedCards[c.id];});
+  var ord=sortedCards(twid,cur).map(function(c){return c.id;});
+  ord=ord.filter(function(id){return id!==did;});
+  if(dropTgt){var ix=ord.indexOf(dropTgt);if(ix>=0)ord.splice(ix,0,did);else ord.push(did);}
+  else ord.push(did);
+  cardOrder[twid]=ord;
+  touchDragId=null;touchSrcWid=null;dragSrcId=null;
+  pushHistory();renderBoard();debouncePersist();
+}
 // ========================= ARTIST VIEW =========================
 function getSeasonEnder(){return currentSeason===1?'Side A':'';}
 function renderArtistView(){
@@ -1478,7 +1590,7 @@ function openDatePicker(inputEl,fmt){
   if(!picker)return;
   var rect=inputEl.getBoundingClientRect();
   picker.style.top=(rect.bottom+window.scrollY+4)+'px';
-  picker.style.left=Math.min(rect.left,window.innerWidth-230)+'px';
+  picker.style.left=Math.max(8,Math.min(rect.left,window.innerWidth-242))+'px';
   picker.style.display='block';
   dpRender();
 }
@@ -1701,7 +1813,8 @@ document.addEventListener('DOMContentLoaded',function(){
   // ---- SEARCH ----
   document.getElementById('search-input').addEventListener('input',function(){
     searchQuery=this.value.trim();
-    if(currentView==='board')renderBoard();
+    clearTimeout(_searchTimer);
+    _searchTimer=setTimeout(function(){if(currentView==='board')renderBoard();},220);
   });
 
   // ---- SORT BUTTONS (delegated) ----
