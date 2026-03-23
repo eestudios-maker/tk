@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Tunog Kalye — Upload Schedule</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 <style>
 :root {
   --bg:#0e0e0e;--surface:#161616;--surface2:#1e1e1e;--border:#2a2a2a;
@@ -387,6 +389,17 @@ body.touch-dragging .card{transition:none !important;}
   #save-indicator{bottom:10px;right:10px;font-size:10px;padding:6px 10px;}
 }
 @media (max-width: 360px){.filter-btn{font-size:10px;padding:3px 7px;}.view-btn{font-size:9px;padding:4px 7px;}}
+/* ── SYNC PILL ──────────────────────────────────────────────── */
+.sync-pill{display:flex;align-items:center;gap:5px;font-size:10px;letter-spacing:0.06em;padding:5px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);background:transparent;white-space:nowrap;transition:all 0.3s;user-select:none;flex-shrink:0;}
+.sync-pill .sp-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);flex-shrink:0;transition:background 0.3s;}
+.sync-pill.live{color:var(--int);border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.06);}
+.sync-pill.live .sp-dot{background:var(--int);animation:sp-pulse 2s ease-in-out infinite;}
+.sync-pill.connecting{color:var(--shoot);border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.06);}
+.sync-pill.connecting .sp-dot{background:var(--shoot);animation:sp-pulse 0.9s ease-in-out infinite;}
+.sync-pill.saving{color:#a855f7;border-color:rgba(168,85,247,0.3);background:rgba(168,85,247,0.06);}
+.sync-pill.saving .sp-dot{background:#a855f7;animation:sp-pulse 0.5s ease-in-out infinite;}
+@keyframes sp-pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
+@media(max-width:480px){.sync-pill span{display:none;}.sync-pill{padding:5px 7px;}}
 </style>
 </head>
 <body>
@@ -426,6 +439,7 @@ body.touch-dragging .card{transition:none !important;}
   <div class="header-right" style="justify-content:flex-end;">
     <button class="ur-btn" id="undo-btn" disabled title="Undo (Ctrl+Z)">&#x21A9; <span class="ur-label">Undo</span></button>
     <button class="ur-btn" id="redo-btn" disabled title="Redo (Ctrl+Y)">&#x21AA; <span class="ur-label">Redo</span></button>
+    <div class="sync-pill" id="sync-pill"><div class="sp-dot"></div><span id="sync-txt">local</span></div>
     <button class="header-btn" id="activity-toggle-btn">📋 Activity</button>
   </div>
   <div class="view-toggle">
@@ -649,6 +663,85 @@ var calYear=2026,calMonth=3;
 var dragSrcId=null;
 var touchDragId=null,touchClone=null,touchSrcWid=null,_touchTimer=null;
 
+// ========================= FIREBASE =========================
+var FIREBASE_CONFIG={
+  apiKey:'AIzaSyCTTZhDu-qHmIWSurpuHsj9KYMRf6LMWrw',
+  authDomain:'kv-catalogue.firebaseapp.com',
+  projectId:'kv-catalogue',
+  storageBucket:'kv-catalogue.firebasestorage.app',
+  messagingSenderId:'467324216893',
+  appId:'1:467324216793:web:517d47c2cc145ca23dac54'
+};
+var db=null,_fbUnsub=null;
+function getDbDoc(){return currentSeason===1?'tunog-kalye/schedule-s1':'tunog-kalye/schedule-s2';}
+function setSyncStatus(state){
+  var pill=document.getElementById('sync-pill');
+  var txt=document.getElementById('sync-txt');
+  if(!pill)return;
+  if(state==='live'){pill.className='sync-pill live';txt.textContent='live sync';}
+  else if(state==='saving'){pill.className='sync-pill saving';txt.textContent='saving\u2026';}
+  else if(state==='connecting'){pill.className='sync-pill connecting';txt.textContent='connecting\u2026';}
+  else{pill.className='sync-pill';txt.textContent='local';}
+}
+function _subscribeSeason(){
+  if(_fbUnsub){_fbUnsub();_fbUnsub=null;}
+  setSyncStatus('connecting');
+  _fbUnsub=db.doc(getDbDoc()).onSnapshot(function(snap){
+    // Skip optimistic (pending) writes — we already have the data locally
+    if(snap.metadata.hasPendingWrites)return;
+    if(snap.exists){
+      var d=snap.data();
+      var sv=d.state||null;
+      var dids=d.deleted||[];
+      // Reset state then re-apply from Firestore
+      uploadedStatus={};editedStatus={};detailLabels={};deletedCards={};
+      dayOverrides={};shootOverrides={};youtubeLinks={};cardNotes={};
+      cardWeekAssign={};customWeeks=[];customCards=[];sortOrders={};
+      activityLog=[];cardOrder={};
+      // Re-seed base defaults for current season
+      getActiveBaseWeeks().forEach(function(w){
+        w.cards.forEach(function(c){detailLabels[c.id]=c.detail;});
+      });
+      if(currentSeason===1){
+        ['u1','u2','u3','u4','u5','u6','d1','d2','d3'].forEach(function(id){uploadedStatus[id]=true;});
+      }
+      initBoard(sv);
+      if(dids.length)dids.forEach(function(id){deletedCards[id]=true;});
+      // Mirror to localStorage as backup
+      try{
+        localStorage.setItem(currentSeason===1?LSK:LSK_S2,JSON.stringify(sv));
+        localStorage.setItem(currentSeason===1?LSDK:LSDK_S2,JSON.stringify(dids));
+      }catch(e){}
+    } else {
+      // No Firestore document yet — seed it from current board state
+      var sv0={
+        up:uploadedStatus,ed:editedStatus,dl:detailLabels,dy:dayOverrides,sh:shootOverrides,
+        yl:youtubeLinks,cn:cardNotes,cw:cardWeekAssign,
+        cwo:customWeeks,cc:customCards,so:sortOrders,al:activityLog,co:cardOrder,af:activeFilter
+      };
+      var dids0=Object.keys(deletedCards).filter(function(k){return deletedCards[k];});
+      db.doc(getDbDoc()).set({state:sv0,deleted:dids0});
+    }
+    setSyncStatus('live');
+    _hist=[_snap()];_hi=0;_upUR();
+    renderBoard();updateStats();
+  },function(err){
+    console.warn('Firestore onSnapshot error:',err);
+    setSyncStatus('local');
+  });
+}
+function initFirebase(){
+  try{
+    if(!firebase.apps||!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
+    db=firebase.firestore();
+    db.enablePersistence({synchronizeTabs:true}).catch(function(){});
+    _subscribeSeason();
+  }catch(e){
+    console.warn('Firebase init failed:',e);
+    setSyncStatus('local');
+  }
+}
+
 // ========================= UNDO/REDO =========================
 function _snap(){
   return {
@@ -833,9 +926,17 @@ function persistState(){
       yl:youtubeLinks,cn:cardNotes,cw:cardWeekAssign,
       cwo:customWeeks,cc:customCards,so:sortOrders,al:activityLog,co:cardOrder,af:activeFilter
     };
-    localStorage.setItem(stKey,JSON.stringify(sv));
     var dids=Object.keys(deletedCards).filter(function(k){return deletedCards[k];});
+    // Always write localStorage first (instant, offline-safe backup)
+    localStorage.setItem(stKey,JSON.stringify(sv));
     localStorage.setItem(delKey,JSON.stringify(dids));
+    // Write to Firestore for live sync
+    if(db){
+      setSyncStatus('saving');
+      db.doc(getDbDoc()).set({state:sv,deleted:dids})
+        .then(function(){setSyncStatus('live');})
+        .catch(function(e){console.error('Firestore write failed:',e);setSyncStatus('local');});
+    }
     showSave('saved');
   } catch(e){showSave('error');}
 }
@@ -919,6 +1020,8 @@ function switchSeason(n){
   updateSeasonUI();
   renderBoard();
   updateStats();
+  // Re-subscribe to the new season's Firestore document
+  if(db)_subscribeSeason();
 }
 
 // ========================= STATS =========================
@@ -1761,6 +1864,9 @@ document.addEventListener('DOMContentLoaded',function(){
 
   _hist=[_snap()];_hi=0;_upUR();
   updateSeasonUI();
+
+  // Connect to Firebase for live sync
+  initFirebase();
 
   // Hide loading screen
   setTimeout(function(){
